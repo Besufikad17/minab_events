@@ -1,5 +1,16 @@
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { initFlowbite } from "flowbite";
+
+onMounted(() => {
+  initFlowbite();
+})
+</script>
+
 <template>
   <div>
-    <h1 class="text-3xl font-bold underline">Minab Events</h1>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>

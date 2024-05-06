@@ -1,0 +1,3 @@
+<template>
+  <SearchField />
+</template>
