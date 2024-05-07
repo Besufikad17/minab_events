@@ -11,13 +11,6 @@ export default {
       enteranceFee: 0,
     }
   },
-  head: {
-    script: [
-      {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js'
-      }
-    ]
-  },
   components: {
     EventIcon,
     SearchIcon,
@@ -31,7 +24,7 @@ export default {
 <template>
   <form class="flex items-center max-w-xl mx-auto">
     <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button"
-      class="text-gray bg-gray-50 border hover:border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+      class="text-gray bg-gray-50 border hover:border-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
       <FilterIcon /> Filters
     </button>
 
@@ -41,12 +34,12 @@ export default {
         <EventIcon />
       </div>
       <input type="text" id="simple-search"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
         placeholder="Search event title..." required />
     </div>
 
     <button type="submit"
-      class="p-2.5 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+      class="p-2.5 ms-2 text-sm font-medium text-white bg-purple-700 rounded-lg border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
       <SearchIcon />
       <span class="sr-only">Search</span>
     </button>
@@ -76,7 +69,7 @@ export default {
                 <label for="locations"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
                 <select id="locations"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
                   <option selected>Choose a location</option>
                   <option value="Addis Ababa">Addis Ababa</option>
                   <option value="Adama">Adama</option>
@@ -87,7 +80,7 @@ export default {
                 <label for="categories"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
                 <select id="categories"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
                   <option selected>Choose a category</option>
                   <option value="1">Concerts</option>
                   <option value="2">Classes and Workshops</option>
@@ -99,10 +92,13 @@ export default {
 
                 <div class="relative mb-6">
                   <label for="labels-range-input"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enterance fee ({{ enteranceFee
+                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enterance
+                    fee
+                    ({{
+                      enteranceFee
                     }} ETB)</label>
                   <input id="labels-range-input" type="range" v-model="enteranceFee" min="0" max="1500"
-                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                    class="w-full h-2 bg-purple-200 rounded-lg accent-purple-800 appearance-none cursor-pointer dark:bg-gray-700 [&::-webkit-slider-thumb]:!bg-purple-800">
                   <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">0 ETB</span>
                   <span
                     class="text-sm text-gray-500 dark:text-gray-400 absolute start-1/3 -translate-x-1/2 rtl:translate-x-1/2 -bottom-6">500
@@ -120,7 +116,7 @@ export default {
                   <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Due
                     date</label>
                   <input id="date" type="date"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
                     placeholder="Select date">
                 </div><br />
               </form>
