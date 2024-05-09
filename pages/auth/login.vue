@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
-import { isValidEmail, isValidPassword } from "../../utils/helpers/validation";
-import { loginMutation } from "../../utils/constants/gql";
+import { required, isValidEmail } from "../../utils/helpers/validation";
+// import { loginMutation } from "../../utils/constants/strings";
+// import { useMutation } from "@vue/apollo-composable";
+// import { provideApolloClient } from "@vue/apollo-composable";
+// import { createApolloClient } from "../../utils/helpers/apollo";
 
 definePageMeta({
   layout: "auth"
 });
 
+// const apolloClient = createApolloClient();
 const { defineField, handleSubmit, errors } = useForm({
   validationSchema: {
     email: isValidEmail,
-    password: isValidPassword
+    password: required
   }
 });
 
@@ -22,17 +26,17 @@ const variables = {
   password: password.value
 };
 
-const { mutate: login } = useMutation(loginMutation, {
-  variables
-});
+// const { mutate: login } = provideApolloClient(apolloClient)(() => useMutation(loginMutation, {
+//   variables: variables,
+// }));
 
 const onSubmit = handleSubmit(values => {
   console.log(values);
-  login().then((res) => {
-    console.log(res);
-  }).catch((err) => {
-    console.log(err);
-  });
+  // login().then((res) => {
+  //   console.log(res);
+  // }).catch((err) => {
+  //   console.log(err);
+  // });
 });
 
 </script>

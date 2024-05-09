@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { required, isValidEmail } from "../../utils/helpers/validation";
-import { registerMutation } from "../../utils/constants/gql";
+import { registerMutation } from "../../utils/constants/strings";
 
 definePageMeta({
   layout: "auth"
