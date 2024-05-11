@@ -10,37 +10,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   modules: [
-    '@nuxtjs/tailwindcss',
-    //'nuxt-graphql-client',
-    //'@nuxtjs/apollo'
+    '@nuxtjs/apollo'
   ],
-  // apollo: {
-  //   autoImports: true,
-  //   clients: {
-  //     default: {
-  //       httpEndpoint: 'https://spacex-production.up.railway.app'
-  //     }
-  //   },
-  // },
-  // 'graphql-client': {
-  //   watch: true,
-  //   autoImport: true,
-  //   functionPrefix: 'Gql',
-  //   documentPaths: ['./'],
-  //   preferGETQueries: false,
-  //   codegen: {
-  //     avoidOptionals: true
-  //   },
-  //   clients: {
-  //     default: {
-  //       host: "https://spacex-production.up.railway.app",
-  //       corsOptions: {
-  //         mode: "no-cors",
-  //         credentials: "same-origin",
-  //       },
-  //     },
-  //   }
-  // },
+  apollo: {
+    autoImports: true,
+    clients: {
+      default: {
+        httpEndpoint: 'http://localhost:8000/query'
+      }
+    },
+  },
   postcss: {
     plugins: {
       tailwindcss: {},

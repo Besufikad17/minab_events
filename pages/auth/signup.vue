@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
-import { required, isValidEmail } from "../../utils/helpers/validation";
+import { required, isValidEmail, isValidPhoneNumber } from "../../utils/helpers/validation";
 import { registerMutation } from "../../utils/constants/strings";
 
 definePageMeta({
@@ -12,7 +12,7 @@ const { defineField, handleSubmit, errors } = useForm({
     firstName: required,
     lastName: required,
     email: isValidEmail,
-    phoneNumber: required,
+    phoneNumber: isValidPhoneNumber,
     password: required,
     confirmPassword: required,
   }
@@ -40,7 +40,13 @@ const { mutate: register } = useMutation(registerMutation, {
 const onSubmit = handleSubmit(values => {
   if (password.value === confirmPassword.value) {
     console.log(values);
-    register().then((res) => {
+    register({
+      first_name: firstName.value,
+      last_name: lastName.value,
+      email: email.value,
+      phone_number: phoneNumber.value,
+      password: password.value
+    }).then((res) => {
       console.log(res);
     }).catch((err) => {
       console.log(err);
@@ -85,7 +91,7 @@ const onSubmit = handleSubmit(values => {
             <input type="text" id="phoneNumber" name="phoneNumber" v-model="phoneNumber" v-bind="phoneNumberProps"
               aria-describedby="helper-text-explanation"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
-              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" required />
+              placeholder="123-456-7890" required />
             <span class="text-sm text-red-600">{{ errors.phoneNumber }}</span>
           </div>
           <div>

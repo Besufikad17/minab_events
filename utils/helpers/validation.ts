@@ -5,3 +5,7 @@ export function required(value: string) {
 export function isValidEmail(value: string) {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
+
+export function isValidPhoneNumber(value: string) {
+	return /(^[0-9]{10}$)/.test(value);
+}

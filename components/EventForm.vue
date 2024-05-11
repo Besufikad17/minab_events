@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { required } from "../utils/helpers/validation";
+import { ref } from 'vue'
 import BirrIcon from "./icons/Birr.vue";
-
 
 const { defineField, handleSubmit, errors } = useForm({
   validationSchema: {
@@ -30,11 +30,25 @@ const onSubmit = handleSubmit(values => {
   console.log(values);
 });
 
+const tagsList = ref([] as string[]);
+
+function addTag() {
+  if(tags.value.length > 0) {
+    const newTags = tags.value.split(",");
+    tagsList.value.push(...newTags);
+    tags.value = ""
+  }
+}
+
+function removeTag(tag: string) {
+  tagsList.value = tagsList.value.filter((t) => t !== tag);
+}
+
 defineComponent({
   components: {
     BirrIcon,
   }
-})
+});
 
 </script>
 
@@ -96,10 +110,27 @@ defineComponent({
         </div>
         <div>
           <label for="tags" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
-          <input type="text" name="tags" id="tags" v-model="tags" v-bind="tagsProps"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-            placeholder="#tech, #meetup" />
+          <div class="flex flex-row w-full">
+            <div class="mr-4 w-full">
+              <input type="text" name="tags" id="tags" v-model="tags" v-bind="tagsProps"
+                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                placeholder="#tech, #meetup" />
+            </div>
+            <div>
+              <button type="button" @click="addTag" class="w-36 text-purple-800 bg-gray border border-purple-800  focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Add</button>
+            </div>
+        </div>
           <span class="text-sm text-red-600">{{ errors.tags }}</span>
+        </div>
+        <div class="grid-cols-4 gap-4">
+          <span id="badge-dismiss-default" v-for="tag in tagsList" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{ tag }}
+              <button type="button" class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300" data-dismiss-target="#badge-dismiss-default" aria-label="Remove" @click="(() => removeTag(tag))">
+                  <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+                  <span class="sr-only">Remove badge</span>
+              </button>
+          </span>
         </div>
         <button type="submit"
           class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Create</button>

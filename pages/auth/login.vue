@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { required, isValidEmail } from "../../utils/helpers/validation";
-// import { loginMutation } from "../../utils/constants/strings";
-// import { useMutation } from "@vue/apollo-composable";
-// import { provideApolloClient } from "@vue/apollo-composable";
-// import { createApolloClient } from "../../utils/helpers/apollo";
+import { loginMutation } from "../../utils/constants/strings";
 
 definePageMeta({
   layout: "auth"
 });
 
-// const apolloClient = createApolloClient();
 const { defineField, handleSubmit, errors } = useForm({
   validationSchema: {
     email: isValidEmail,
@@ -22,21 +18,20 @@ const [email, emailProps] = defineField('email');
 const [password, passwordProps] = defineField('password');
 
 const variables = {
-  loginText: email.value,
-  password: password.value
+  loginText: "bese@gmail.com",
+  password: "somepass"
 };
 
-// const { mutate: login } = provideApolloClient(apolloClient)(() => useMutation(loginMutation, {
-//   variables: variables,
-// }));
+const { mutate } = useMutation(loginMutation, { variables });
 
-const onSubmit = handleSubmit(values => {
+const onSubmit = handleSubmit(async values => {
   console.log(values);
-  // login().then((res) => {
-  //   console.log(res);
-  // }).catch((err) => {
-  //   console.log(err);
-  // });
+  try {
+    const result = await mutate({ variables });
+    console.log(result);
+  } catch (error) {
+    console.error('Mutation error:', error);
+  }
 });
 
 </script>
