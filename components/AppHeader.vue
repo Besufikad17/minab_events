@@ -1,15 +1,18 @@
-<script lang="ts">
+<script setup lang="ts">
 import ExpandIcon from "./icons/Expand.vue";
-export default {
-  data() {
-    return {
-      isLoggedIn: false
-    }
-  },
+import { ref } from "vue";
+
+const { $locally } = useNuxtApp();
+const token = $locally.getItem('token');
+const isLoggedIn = ref(token != null);
+
+// TODO: JWT DECODER
+
+defineComponent({
   components: {
     ExpandIcon
   }
-}
+})
 </script>
 
 <template>

@@ -140,20 +140,28 @@ export default {
                         placeholder="#tech, #meetup" />
                     </div>
                     <div>
-                      <button type="button" @click="addTag" class="w-32 text-white bg-purple-700 hover:border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Add</button>
+                      <button type="button" @click="addTag"
+                        class="w-32 text-white bg-purple-700 hover:border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Add</button>
                     </div>
-                </div><br/>
-                <div class="grid-cols-4 gap-4">
-                  <span id="badge-dismiss-default" v-for="tag in tagsList" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{ tag }}
-                      <button type="button" class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300" data-dismiss-target="#badge-dismiss-default" aria-label="Remove" @click="(() => removeTag(tag))">
-                          <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                          </svg>
-                          <span class="sr-only">Remove badge</span>
+                  </div><br />
+                  <div class="grid-cols-4 gap-4">
+                    <span id="badge-dismiss-default" v-for="tag in tagsList" :key="tag"
+                      class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
+                      tag }}
+                      <button type="button"
+                        class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300"
+                        data-dismiss-target="#badge-dismiss-default" aria-label="Remove"
+                        @click="(() => removeTag(tag))">
+                        <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                          viewBox="0 0 14 14">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Remove badge</span>
                       </button>
-                  </span>
+                    </span>
+                  </div>
                 </div>
-              </div>
               </form>
             </client-only>
           </div>

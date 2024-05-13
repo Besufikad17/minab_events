@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     autoImports: true,
     clients: {
       default: {
-        httpEndpoint: 'http://localhost:8000/query'
+        httpEndpoint: 'http://localhost:8080/v1/graphql'
       }
     },
   },
