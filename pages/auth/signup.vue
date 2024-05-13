@@ -57,8 +57,10 @@ const onSubmit = handleSubmit(values => {
       phone_number: phoneNumber.value,
       password: password.value
     }).then((res) => {
-      $locally.setItem('token', res.data.Register.token);
-      // TODO: redirect to home page
+      //$locally.setItem('token', res.data.Register.token);
+      const token = useCookie('token');
+      token.value = res.data.Register.token;
+      navigateTo("/home");
     }).catch((err) => {
       console.log(err);
       isError.value = true;

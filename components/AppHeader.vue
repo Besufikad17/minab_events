@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import ExpandIcon from "./icons/Expand.vue";
 import { ref } from "vue";
+import { jwtDecode } from "jwt-decode";
 
 const { $locally } = useNuxtApp();
-const token = $locally.getItem('token');
-const isLoggedIn = ref(token != null);
+const token = useCookie('token');
+const isLoggedIn = ref(token.value && token.value !== null);
+let decoded: any = {};
 
-// TODO: JWT DECODER
+if (isLoggedIn.value) {
+  decoded = jwtDecode(token.value!);
+}
 
 defineComponent({
   components: {
@@ -35,19 +39,9 @@ defineComponent({
         <ul
           class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
           <client-only>
-            <template v-if="!isLoggedIn">
+            <template v-if="isLoggedIn!">
               <li>
-                <a href="/auth/signup"
-                  class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-700 md:p-0 dark:text-white md:dark:hover:text-purple-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Register</a>
-              </li>
-              <li>
-                <a href="/auth/login"
-                  class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-700 md:p-0 dark:text-white md:dark:hover:text-purple-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Login</a>
-              </li>
-            </template>
-            <template v-else>
-              <li>
-                <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar"
+                <button type="button" id="dropdownNavbarBtn" data-dropdown-toggle="dropdownNavbar" aria-expanded="false"
                   class="flex items-center justify-between w-full py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-purple-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Events
                   <ExpandIcon />
                 </button>
@@ -74,13 +68,13 @@ defineComponent({
               </li>
               <div>
                 <button type="button" class="flex text-sm bg-white-800 rounded-full" aria-expanded="false"
-                  data-dropdown-toggle="dropdown-user">
+                  data-dropdown-toggle="dropdown-user" id="dropdown-user-btn">
                   <span class="sr-only">Open user menu</span>
-                  <span class="flex-1 ms-3 whitespace-nowrap">Test@gmail.com</span>
+                  <span class="flex-1 ms-3 whitespace-nowrap">Abebe</span>
                 </button>
-                <div
+                <div id="dropdown-user"
                   class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
-                  id="dropdown-user">
+                  >
                   <div class="px-4 py-3" role="none">
                     <p class="text-sm text-gray-900 dark:text-white" role="none">
                       Neil Sims
@@ -98,6 +92,16 @@ defineComponent({
                   </ul>
                 </div>
               </div>
+            </template>
+            <template v-else>
+              <li>
+                <a href="/auth/signup"
+                  class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-700 md:p-0 dark:text-white md:dark:hover:text-purple-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Register</a>
+              </li>
+              <li>
+                <a href="/auth/login"
+                  class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-700 md:p-0 dark:text-white md:dark:hover:text-purple-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Login</a>
+              </li>
             </template>
           </client-only>
         </ul>
