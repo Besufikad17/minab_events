@@ -124,12 +124,21 @@ export default {
                   <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">1500 ETB</span>
                 </div><br />
 
-                <div class="relative max-w-sm">
-                  <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Due
-                    date</label>
-                  <input id="date" type="date"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
-                    placeholder="Select date">
+                <div class="flex flex-row w-full">
+                  <div class="w-full mr-8">
+                    <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+                      date</label>
+                    <input id="date" type="date"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
+                      placeholder="Select date">
+                  </div>
+                  <div class="w-full">
+                    <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+                      date</label>
+                    <input id="date" type="date"
+                      class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
+                      placeholder="Select date">
+                  </div>
                 </div><br />
                 <div>
                   <label for="tags" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
@@ -147,7 +156,7 @@ export default {
                   <div class="grid-cols-4 gap-4">
                     <span id="badge-dismiss-default" v-for="tag in tagsList" :key="tag"
                       class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
-                      tag }}
+                        tag }}
                       <button type="button"
                         class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300"
                         data-dismiss-target="#badge-dismiss-default" aria-label="Remove"

@@ -10,6 +10,8 @@ const { defineField, handleSubmit, errors } = useForm({
     description: required,
     category: required,
     enrollmentFee: required,
+    startDate: required,
+    endDate: required,
     tags: required
   }
 });
@@ -18,6 +20,8 @@ const [title, titleProps] = defineField('title');
 const [description, descriptionProps] = defineField('description');
 const [category, categoryProps] = defineField('category');
 const [enrollmentFee, enrollmentFeeProps] = defineField('enrollment_fee');
+const [startDate, startDateProps] = defineField('start_date');
+const [endDate, endDateProps] = defineField('end_date');
 const [tags, tagsProps] = defineField('tags');
 
 const onFileChange = (e) => {
@@ -33,7 +37,7 @@ const onSubmit = handleSubmit(values => {
 const tagsList = ref([] as string[]);
 
 function addTag() {
-  if(tags.value.length > 0) {
+  if (tags.value.length > 0) {
     const newTags = tags.value.split(",");
     tagsList.value.push(...newTags);
     tags.value = ""
@@ -108,6 +112,22 @@ defineComponent({
           </div>
           <span class="text-sm text-red-600">{{ errors.enrollmentFee }}</span>
         </div>
+        <div class="flex flex-row w-full">
+          <div class="w-full mr-8">
+            <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+              date</label>
+            <input id="start_date" type="date"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
+              placeholder="Select date">
+          </div>
+          <div class="w-full">
+            <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+              date</label>
+            <input id="end_date" type="date"
+              class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
+              placeholder="Select date">
+          </div>
+        </div>
         <div>
           <label for="tags" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
           <div class="flex flex-row w-full">
@@ -117,19 +137,26 @@ defineComponent({
                 placeholder="#tech, #meetup" />
             </div>
             <div>
-              <button type="button" @click="addTag" class="w-36 text-purple-800 bg-gray border border-purple-800  focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Add</button>
+              <button type="button" @click="addTag"
+                class="w-36 text-purple-800 bg-gray border border-purple-800  focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Add</button>
             </div>
-        </div>
+          </div>
           <span class="text-sm text-red-600">{{ errors.tags }}</span>
         </div>
         <div class="grid-cols-4 gap-4">
-          <span id="badge-dismiss-default" v-for="tag in tagsList" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{ tag }}
-              <button type="button" class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300" data-dismiss-target="#badge-dismiss-default" aria-label="Remove" @click="(() => removeTag(tag))">
-                  <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                  </svg>
-                  <span class="sr-only">Remove badge</span>
-              </button>
+          <span id="badge-dismiss-default" v-for="tag in tagsList"
+            class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
+              tag }}
+            <button type="button"
+              class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300"
+              data-dismiss-target="#badge-dismiss-default" aria-label="Remove" @click="(() => removeTag(tag))">
+              <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+              <span class="sr-only">Remove badge</span>
+            </button>
           </span>
         </div>
         <button type="submit"
