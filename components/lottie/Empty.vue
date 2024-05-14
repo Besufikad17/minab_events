@@ -1,0 +1,9 @@
+<template>
+  <client-only>
+    <Vue3Lottie
+        animationData="https://lottie.host/ee8ba084-7d0a-4df0-a221-ef52652d7734/QNsAJwYQAf.json"
+        :height="200"
+        :width="200"
+    />
+  </client-only>
+</template>

@@ -12,7 +12,9 @@ const { defineField, handleSubmit, errors } = useForm({
     enrollmentFee: required,
     startDate: required,
     endDate: required,
-    tags: required
+    tags: required,
+    city: required,
+    venue: required,
   }
 });
 
@@ -23,8 +25,10 @@ const [enrollmentFee, enrollmentFeeProps] = defineField('enrollment_fee');
 const [startDate, startDateProps] = defineField('start_date');
 const [endDate, endDateProps] = defineField('end_date');
 const [tags, tagsProps] = defineField('tags');
+const [city, cityProps] = defineField('city');
+const [venue, venueProps] = defineField('venue');
 
-const onFileChange = (e) => {
+const onFileChange = (e: any) => {
   var files = e.target.files || e.dataTransfer.files;
   if (!files.length)
     return;
@@ -128,6 +132,22 @@ defineComponent({
               placeholder="Select date">
           </div>
         </div>
+        <div class="flex flex-row w-full">
+          <div class="mr-8">
+            <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
+            <input type="city" name="city" id="city" v-model="city" v-bind="cityProps"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+              placeholder="City" />
+            <span class="text-sm text-red-600">{{ errors.city }}</span>
+          </div>
+          <div>
+            <label for="venue" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Venue</label>
+            <input type="venue" name="venue" id="venue" v-model="venue" v-bind="venueProps"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+              placeholder="Venue" />
+            <span class="text-sm text-red-600">{{ errors.venue }}</span>
+          </div>
+        </div>
         <div>
           <label for="tags" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
           <div class="flex flex-row w-full">
@@ -164,4 +184,5 @@ defineComponent({
       </form>
     </div>
   </div>
+  <Footer />
 </template>

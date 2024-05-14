@@ -47,7 +47,7 @@ defineComponent({
               <template v-if="isLoggedIn!">
                 <div class="flex flex-row items-center">
                   <li class="mr-4">
-                    <a href="#"
+                    <a href="/events/my"
                       class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-purple-700 md:p-0 dark:text-white md:dark:hover:text-purple-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">My Events</a>
                   </li>
                   <li class="mr-4 ">

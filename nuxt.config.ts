@@ -1,6 +1,5 @@
 import { defineNuxtConfig } from "nuxt/config";
 
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
@@ -8,6 +7,11 @@ export default defineNuxtConfig({
     }
   },
   devtools: { enabled: true },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => ['Vue3Lottie'].includes(tag),
+    },
+  },
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxtjs/apollo'
