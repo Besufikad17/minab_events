@@ -11,7 +11,7 @@ definePageMeta({
   layout: "auth"
 });
 
-const { $locally } = useNuxtApp();
+const rememberMe = ref(false);
 const errorMessage = ref("");
 const isLoading = ref(false);
 const isError = ref(false);
@@ -39,7 +39,8 @@ const variables = {
   last_name: lastName.value,
   email: email.value,
   phone_number: phoneNumber.value,
-  password: password.value
+  password: password.value,
+  remember_me: rememberMe.value
 };
 
 const { mutate: register } = useMutation(registerMutation, {
@@ -55,11 +56,12 @@ const onSubmit = handleSubmit(values => {
       last_name: lastName.value,
       email: email.value,
       phone_number: phoneNumber.value,
-      password: password.value
+      password: password.value,
+      remember_me: rememberMe.value
     }).then((res) => {
-      //$locally.setItem('token', res.data.Register.token);
       const token = useCookie('token');
-      token.value = res.data.Register.token;
+      token.value = res!.data.Register.token;
+      isLoading.value = false;
       navigateTo("/home");
     }).catch((err) => {
       console.log(err);
@@ -166,6 +168,15 @@ defineComponent({
               v-model="confirmPassword" v-bind="confirmPasswordProps"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" />
             <span class="text-sm text-red-600">{{ errors.confirmPassword }}</span>
+          </div>
+        </div>
+        <div class="flex items-start">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input id="remember" type="checkbox" v-model="rememberMe" name="remember"
+                class="w-4 h-4 border border-gray-300 rounded bg-gray-50 checked:bg-purple-700 focus:ring-3 focus:ring-purple-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-purple-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
+            </div>
+            <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember me</label>
           </div>
         </div>
         <button disabled type="button" v-if="isLoading"
