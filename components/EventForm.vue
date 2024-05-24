@@ -1,44 +1,123 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import { required } from "../utils/helpers/validation";
-import { ref } from 'vue'
+import { ref } from "vue";
 import BirrIcon from "./icons/Birr.vue";
+import CloseIcon from "./icons/Close.vue";
+import ErrorIcon from "./icons/Error.vue";
+import LoadingIcon from "./icons/Loading.vue";
+import SuccessIcon from "./icons/Success.vue"
+import { AddEvent } from "~/utils/constants/queries/events";
+
+const config = useRuntimeConfig();
+
+const isLoading = ref(false);
+const isError = ref(false);
+const message = ref("");
+const image = ref("");
+const tagsList = ref([] as string[]);
 
 const { defineField, handleSubmit, errors } = useForm({
+  initialValues: {
+    title: '',
+    description: '',
+    category: '0',
+    enteranceFee: 0,
+    startDate: new Date(),
+    endDate: new Date(),
+    tags: "",
+    city: "",
+    venue: ""
+  },
   validationSchema: {
     title: required,
     description: required,
     category: required,
-    enrollmentFee: required,
     startDate: required,
     endDate: required,
-    tags: required,
     city: required,
-    venue: required,
+    venue: required
   }
 });
 
 const [title, titleProps] = defineField('title');
 const [description, descriptionProps] = defineField('description');
 const [category, categoryProps] = defineField('category');
-const [enrollmentFee, enrollmentFeeProps] = defineField('enrollment_fee');
-const [startDate, startDateProps] = defineField('start_date');
-const [endDate, endDateProps] = defineField('end_date');
+const [enteranceFee, enteranceFeeProps] = defineField('enteranceFee');
+const [startDate, startDateProps] = defineField('startDate');
+const [endDate, endDateProps] = defineField('endDate');
 const [tags, tagsProps] = defineField('tags');
 const [city, cityProps] = defineField('city');
 const [venue, venueProps] = defineField('venue');
 
-const onFileChange = (e: any) => {
-  var files = e.target.files || e.dataTransfer.files;
-  if (!files.length)
-    return;
-}
+const variables = {
+  user_id: 1,
+  title: title.value,
+  description: description.value,
+  category_id: parseInt(category.value),
+  enterance_fee: enteranceFee.value,
+  start_date: new Date(startDate.value),
+  end_date: new Date(endDate.value),
+  tags: tagsList.value,
+  city: city.value,
+  venue: venue.value,
+  image: image.value
+};
+
+const { mutate: addEvent } = await useMutation(AddEvent, { variables });
 
 const onSubmit = handleSubmit(values => {
   console.log(values);
+  isLoading.value = true;
+  addEvent({
+    user_id: 79,
+    title: title.value,
+    description: description.value,
+    category_id: parseInt(category.value),
+    enterance_fee: enteranceFee.value,
+    start_date: new Date(startDate.value),
+    end_date: new Date(endDate.value),
+    tags: tagsList.value,
+    city: city.value,
+    venue: venue.value,
+    image: image.value
+  }).then(response => {
+    console.log(response);
+    message.value = "Event created successfully";
+    setTimeout(() => {
+      message.value = "";
+    }, 5000);
+    window.location.reload();
+  }).catch(err => {
+    isError.value = true;
+    message.value = "Failed to create event";
+    console.log(err)
+  });
+  isLoading.value = false;
 });
 
-const tagsList = ref([] as string[]);
+function onFileChange(e: any) {
+  var files = e.target.files || e.dataTransfer.files;
+  if (!files.length)
+    return;
+  
+  const formData = new FormData();
+  formData.append('file', files[0]);
+  formData.append('upload_preset', config.public.CLOUDINARY_UPLOAD_PRESET);
+
+  fetch(config.public.CLOUDINARY_URL, {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json())
+    .then((data) => {
+      if (data.secure_url !== '') {
+        console.log(data.secure_url);
+        image.value = data.secure_url;
+      }
+    })
+    .catch(err => console.error(err));
+}
 
 function addTag() {
   if (tags.value.length > 0) {
@@ -49,22 +128,52 @@ function addTag() {
 }
 
 function removeTag(tag: string) {
-  tagsList.value = tagsList.value.filter((t) => t !== tag);
+  tagsList.value = tagsList.value.filter((t: string) => t !== tag);
+}
+
+function toggle() {
+  message.value = "";
+  isError.value = false;
 }
 
 defineComponent({
   components: {
     BirrIcon,
+    CloseIcon,
+    ErrorIcon,
+    LoadingIcon,
+    SuccessIcon
   }
 });
 
 </script>
 
 <template>
+  <div id="toast-top-right" v-if="message.length !== 0"
+    class="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
+    role="alert">
+    <div v-if="isError"
+      class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+      <ErrorIcon />
+      <span class="sr-only">Error icon</span>
+    </div>
+    <div v-else
+      class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-purple-100 rounded-lg dark:bg-purple-800 dark:text-purple-200">
+      <SuccessIcon />
+      <span class="sr-only">Success icon</span>
+    </div>
+    <div class="ms-3 text-sm font-normal">{{ message }}</div>
+    <button type="button"
+      class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+      data-dismiss-target="#toast-top-right" aria-label="Close" @click="toggle">
+      <span class="sr-only">Close</span>
+      <CloseIcon />
+    </button>
+  </div>
   <div class="flex flex-col justify-center items-center max-w-xl mt-4 mx-auto">
     <div class="flex flex-col items-center w-full max-w-xl p-4 bg-white  sm:p-6 md:p-8 dark:bg-gray-800">
       <h5 class="text-xl font-medium text-gray-900 dark:text-white">Create an event</h5><br />
-      <form class="space-y-6 w-full" @submit="onSubmit" action="#">
+      <form class="space-y-6 w-full" @submit.prevent="onSubmit" action="#">
         <div>
           <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
           <input type="text" name="title" id="title" v-model="title" v-bind="titleProps"
@@ -81,10 +190,10 @@ defineComponent({
           <span class="text-sm text-red-600">{{ errors.description }}</span>
         </div>
         <div>
-          <label for="categories" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-          <select id="categories" v-model="category" v-bind="categoryProps"
+          <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+          <select id="category" v-model="category" v-bind="categoryProps"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
-            <option selected>Choose a category</option>
+            <option value="0">Choose a category</option>
             <option value="1">Concerts</option>
             <option value="2">Classes and Workshops</option>
             <option value="3">Festivals and Fairs</option>
@@ -104,30 +213,30 @@ defineComponent({
             attention.</div>
         </div>
         <div>
-          <label for="enrollment_fee" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enterance
+          <label for="enteranceFee" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enterance
             fee</label>
           <div class="relative">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
               <BirrIcon />
             </div>
-            <input type="number" id="enrollment_fee"
+            <input type="number" id="enteranceFee"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
-              placeholder="999 birr" min="0" max="1500" v-model="enrollmentFee" v-bind="enrollmentFeeProps" />
+              placeholder="999 birr" min="0" max="1500" v-model="enteranceFee" v-bind="enteranceFeeProps" />
           </div>
-          <span class="text-sm text-red-600">{{ errors.enrollmentFee }}</span>
+          <span class="text-sm text-red-600">{{ errors.enteranceFee }}</span>
         </div>
         <div class="flex flex-row w-full">
           <div class="w-full mr-8">
-            <label for="start_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
+            <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
               date</label>
-            <input id="start_date" type="date"
+            <input id="startDate" type="date"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
               placeholder="Select date">
           </div>
           <div class="w-full">
-            <label for="end_date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
+            <label for="endDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
               date</label>
-            <input id="end_date" type="date"
+            <input id="endDate" type="date"
               class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
               placeholder="Select date">
           </div>
@@ -164,7 +273,7 @@ defineComponent({
           <span class="text-sm text-red-600">{{ errors.tags }}</span>
         </div>
         <div class="grid-cols-4 gap-4">
-          <span id="badge-dismiss-default" v-for="tag in tagsList"
+          <span id="badge-dismiss-default" v-for="tag in tagsList" v-bind:key="tag"
             class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
               tag }}
             <button type="button"
@@ -179,7 +288,11 @@ defineComponent({
             </button>
           </span>
         </div>
-        <button type="submit"
+        <button v-if="isLoading" type="submit"
+          class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" disabled>
+          <LoadingIcon />
+        </button>
+        <button type="submit" 
           class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Create</button>
       </form>
     </div>

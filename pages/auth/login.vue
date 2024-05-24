@@ -4,7 +4,7 @@ import CloseIcon from "../../components/icons/Close.vue";
 import LoadingIcon from "../../components/icons/Loading.vue";
 import { useForm } from "vee-validate";
 import { required, isValidEmail } from "../../utils/helpers/validation";
-import { loginMutation } from "../../utils/constants/queries";
+import { loginMutation } from "../../utils/constants/queries/auth";
 import { ref } from "vue";
 
 definePageMeta({

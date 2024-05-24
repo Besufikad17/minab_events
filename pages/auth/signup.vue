@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useForm } from "vee-validate";
 import { required, isValidEmail, isValidPhoneNumber } from "../../utils/helpers/validation";
-import { registerMutation } from "../../utils/constants/queries";
+import { registerMutation } from "../../utils/constants/queries/auth";
 import ErrorIcon from "../../components/icons/Error.vue";
 import CloseIcon from "../../components/icons/Close.vue";
 import LoadingIcon from "../../components/icons/Loading.vue";
@@ -59,6 +59,7 @@ const onSubmit = handleSubmit(values => {
       password: password.value,
       remember_me: rememberMe.value
     }).then((res) => {
+      // TODO expiry date based on rememberMe
       const token = useCookie('token');
       token.value = res!.data.Register.token;
       isLoading.value = false;

@@ -4,17 +4,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       GQL_HOST: process.env.GQL_HOST,
+      CLOUDINARY_UPLOAD_PRESET: process.env.CLOUDINARY_CLOUD_PRESET,
+      CLOUDINARY_URL: process.env.CLOUDINARY_URL
     }
   },
   devtools: { enabled: true },
-  vue: {
-    compilerOptions: {
-      isCustomElement: (tag) => ['Vue3Lottie'].includes(tag),
-    },
-  },
   css: ['~/assets/css/main.css'],
   modules: [
-    '@nuxtjs/apollo'
+    '@nuxtjs/apollo',
   ],
   apollo: {
     autoImports: true,

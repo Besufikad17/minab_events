@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@dotlottie/player-component": "^2.7.12",
     "@nuxt/types": "^2.17.3",
     "flowbite": "^2.3.0",
     "jwt-decode": "^4.0.0",
@@ -26,6 +25,7 @@
     "@nuxtjs/apollo": "^5.0.0-alpha.14",
     "@nuxtjs/tailwindcss": "^6.12.0",
     "autoprefixer": "^10.4.19",
+    "nuxt-file-storage": "^0.2.2",
     "postcss": "^8.4.38"
   }
 }

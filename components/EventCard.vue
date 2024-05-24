@@ -35,10 +35,10 @@ export default {
         <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ title }}</h5>
       </a>
 
-      <div class="h-24">
+      <!-- <div class="h-24">
         <p class="text-ellipsis overflow-hidden line-clamp-4 mb-3 font-normal text-gray-700 dark:text-gray-400">{{
           description }}</p>
-      </div><br />
+      </div><br /> -->
       <p class="text-sm text-gray-500 dark:text-gray-400">{{
         startDate?.getDate() === endDate?.getDate() ? startDate?.toDateString().split(' ')[1] + '' +
           startDate?.toDateString().split(' ')[2] + ', ' + startDate?.toDateString().split(' ')[3] :

@@ -1,36 +1,65 @@
-<script lang="ts">
+<script setup lang="ts">
 import EventIcon from "./icons/Event.vue";
 import SearchIcon from "./icons/Search.vue";
 import FilterIcon from "./icons/Filter.vue";
 import CloseIcon from "./icons/Close.vue";
 import DateIcon from "./icons/Date.vue";
+import LoadingIcon from "./icons/Loading.vue";
+import { searchEventQuery } from "../utils/constants/queries/events";
+import { ref } from "vue";
 
-export default {
-  data() {
-    return {
-      enteranceFee: 0,
-      tagsList: [] as string[],
-      tags: "",
-    }
-  },
+const isLoading = ref(false);
+const skip = ref(0);
+const take = ref(10);
+const text = ref("");
+const city = ref("");
+const category = ref("1");
+const startDate = ref(new Date().toISOString().split("T")[0]);
+const endDate = ref(new Date().toISOString().split("T")[0]);
+const enteranceFee = ref(0);
+const tags = ref("");
+const tagsList = ref([] as string[]);
+
+const addTag = () => {
+  const newTags = tags.value.split(",");
+  tagsList.value.push(...newTags);
+  tags.value = ""
+}
+
+const removeTag = (tag: string) => {
+  tagsList.value = tagsList.value.filter((t) => t !== tag);
+}
+    
+const search = async()  =>{
+  const variables = {
+    text: text.value,
+    city: city.value,
+    category_id: parseInt(category.value),
+    start_date: startDate.value,
+    end_date: endDate.value,
+    max_fee: enteranceFee.value,
+    tags: tagsList.value,
+    skip: skip.value,
+    take: take.value
+  };
+
+  console.log(variables)
+  isLoading.value = true;
+  const { data } = await useAsyncQuery(searchEventQuery, variables); 
+  console.log(data.value);
+  isLoading.value = false;
+}
+
+defineComponent({
   components: {
     EventIcon,
     SearchIcon,
     FilterIcon,
     CloseIcon,
-    DateIcon
-  },
-  methods: {
-    addTag() {
-      const newTags = this.tags.split(",");
-      this.tagsList.push(...newTags);
-      this.tags = ""
-    },
-    removeTag(tag: string) {
-      this.tagsList = this.tagsList.filter((t) => t !== tag);
-    }
+    DateIcon,
+    LoadingIcon
   }
-}
+})
 </script>
 
 <template>
@@ -45,12 +74,16 @@ export default {
       <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
         <EventIcon />
       </div>
-      <input type="text" id="simple-search"
+      <input type="text" id="simple-search" v-model="text"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
-        placeholder="Search event title..." required />
+        placeholder="Search event title..."/>
     </div>
 
-    <button type="submit"
+    <button v-if="isLoading" type="button" disabled 
+      class="p-1.5 ms-2 text-sm font-medium text-white bg-purple-700 rounded-lg border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
+      <LoadingIcon />
+    </button>
+    <button v-else type="button" @click="search"
       class="p-2.5 ms-2 text-sm font-medium text-white bg-purple-700 rounded-lg border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
       <SearchIcon />
       <span class="sr-only">Search</span>
@@ -78,20 +111,19 @@ export default {
           <div class="p-4 md:p-5 space-y-4">
             <client-only>
               <form class="max-w-sm mx-auto">
-                <label for="locations"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
-                <select id="locations"
+                <label for="cities"
+                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
+                <select id="cities" v-model="city"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
-                  <option selected>Choose a location</option>
+                  <option selected>Choose a city</option>
                   <option value="Addis Ababa">Addis Ababa</option>
                   <option value="Adama">Adama</option>
                   <option value="Hawassa">Hawassa</option>
                   <option value="Bahridar">Bahridar</option>
                 </select><br />
-
                 <label for="categories"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                <select id="categories"
+                <select id="categories" v-model="category"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
                   <option selected>Choose a category</option>
                   <option value="1">Concerts</option>
@@ -128,14 +160,14 @@ export default {
                   <div class="w-full mr-8">
                     <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
                       date</label>
-                    <input id="date" type="date"
+                    <input id="date" type="date" v-model="startDate"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
                       placeholder="Select date">
                   </div>
                   <div class="w-full">
                     <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
                       date</label>
-                    <input id="date" type="date"
+                    <input id="date" type="date" v-model="endDate"
                       class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
                       placeholder="Select date">
                   </div>

@@ -1,16 +1,9 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import type { Event } from "../../types/event";
-  import EmptyLottie from "../../components/lottie/Empty.vue";
 
   const isLoading = ref(false);
   const events: Ref<Event[]> = ref([]);
-
-  defineComponent({
-    components: {
-      EmptyLottie
-    }
-  });
 </script>
 <template>
   <SearchField /><br /><br />
@@ -22,9 +15,9 @@
           :imageUrl="event.image" :location="event.location.venue + ', ' + event.location.city"
           :startDate="event.startDate" :endDate="event.endDate" :category="event.category">{{ event }}</EventCard>
       </div>
-      <div v-else class="text-center w-full">
+      <div v-else class="flex flex-col items-center text-center w-full">
+        <img src="../../assets/images/empty.jpg" width="300" height="300" />
         <p class="text-2xl">No events :(</p><br />
-        <!-- <EmptyLottie /> -->
         <a href="/events/create" class="text-sm text-purple-600">Create an event</a>
       </div>
     </div>

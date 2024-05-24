@@ -5,14 +5,16 @@ export type Location = {
 
 export type Event = {
   id: number;
-  userId: number;
-  category: string;
+  user_id: number;
+  category: {
+    name: string;
+  };
   title: string;
   description: string;
   image: string;
-  enteranceFee: number;
+  enterance_fee: number;
   location: Location;
-  startDate: Date;
-  endDate: Date;
+  start_date: Date;
+  end_date: Date;
   tags: string[];
 };
