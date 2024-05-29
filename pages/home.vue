@@ -1,58 +1,51 @@
-<script lang="ts">
+<script setup lang="ts">
 import { getEventsQuery } from "../utils/constants/queries/events";
 import type { Event } from "../types/event";
 
-export default {
-  apollo: {
-    events: {
-      query: getEventsQuery,
-      variables: {
-        skip: 0,
-        take: 6
-      },
-    }
-  },
-  data() {
-    return {
-      isLoading: false,
-      events: [] as Event[],
-      skip: 0,
-      take: 6,
-      totalEvents: 0
-    }
-  },
-  methods: {
-    async fetch() {
-      try {
-        const res = await this.$apollo.defaultClient.query({
-          query: getEventsQuery,
-          variables: {
-            skip: this.skip,
-            take: this.take
-          }
-        });
+const isLoading = ref(false);
+const events = ref<Event[]>([]);
+const totalEvents = ref(0);
+const currentPage = ref(1);
+const skip = ref(0);
+const take = ref(6);
 
-        if (res) {
-          this.isLoading = false;
-          const { results } = res.data.events;
-          this.events = results;
-        }
-      } catch (err) {
-        console.error(err);
-        this.isLoading = false;
-        this.events = [];
-      }
-    },
-    next() {
-      this.skip += 6;
-      this.fetch();
-    },
-    prev() {
-      if(this.skip > 0) {
-        this.skip -= 6;
-        this.fetch();
-      }
-    }
+const variables = { 
+  user_id: 79,
+  skip: skip.value,
+  take: take.value
+};
+
+const { data } = await useAsyncQuery(getEventsQuery, variables);
+if(data.value?.events) {
+  events.value = data.value.events;
+  totalEvents.value = data.value.events_aggregate.aggregate.count;
+}else {
+  console.log('No events found');
+}
+
+const next = async() => {
+  if(currentPage.value * 6 < totalEvents.value) {
+    skip.value += 6;
+    currentPage.value += 1;
+    fetchMore();
+  }
+}
+
+const prev = () => {
+  if(skip.value > 0) {
+    skip.value -= 6;
+    currentPage.value -= 1;
+    fetchMore();
+  }
+}
+
+const fetchMore = async() => {
+  const { data } = await useAsyncQuery(getEventsQuery, { user_id: 79, skip: skip.value, take: take.value });
+  if(data.value?.events) {
+    events.value = data.value.events;
+    totalEvents.value = data.value.events_aggregate.aggregate.count;
+  }else {
+    console.log('No events found');
   }
 }
 
@@ -77,7 +70,7 @@ export default {
             <button @click="prev" class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-purple-700 rounded-s hover:bg-purple-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                 Prev
             </button>
-            <button v-if="events.length === 6" @click="next" class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-purple-700 rounded-s hover:bg-purple-900 dark:bg-purple-800 dark:border-purple-700 dark:text-white-400 dark:hover:bg-white-700 dark:hover:text-purple">
+            <button v-if="currentPage * 6 < totalEvents" @click="next" class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-purple-700 rounded-s hover:bg-purple-900 dark:bg-purple-800 dark:border-purple-700 dark:text-white-400 dark:hover:bg-white-700 dark:hover:text-purple">
                 Next
             </button>
         </div>

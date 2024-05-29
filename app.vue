@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { initFlowbite } from "flowbite";
+import { initFlowbite, initDropdowns } from "flowbite";
 
 onMounted(() => {
   initFlowbite();
+  initDropdowns();
 })
 </script>
 

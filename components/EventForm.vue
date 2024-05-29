@@ -8,6 +8,7 @@ import ErrorIcon from "./icons/Error.vue";
 import LoadingIcon from "./icons/Loading.vue";
 import SuccessIcon from "./icons/Success.vue"
 import { AddEvent } from "~/utils/constants/queries/events";
+import { jwtDecode } from "jwt-decode";
 
 const config = useRuntimeConfig();
 
@@ -16,6 +17,14 @@ const isError = ref(false);
 const message = ref("");
 const image = ref("");
 const tagsList = ref([] as string[]);
+const decoded = ref({} as any);
+
+const token = useCookie('token');
+if(token.value && token.value !== null) {
+  decoded.value = jwtDecode(token.value!);
+}else {
+  await navigateTo("/auth/login");
+}
 
 const { defineField, handleSubmit, errors } = useForm({
   initialValues: {
@@ -51,7 +60,7 @@ const [city, cityProps] = defineField('city');
 const [venue, venueProps] = defineField('venue');
 
 const variables = {
-  user_id: 1,
+  user_id: decoded.value.id,
   title: title.value,
   description: description.value,
   category_id: parseInt(category.value),

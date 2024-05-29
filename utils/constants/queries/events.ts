@@ -1,5 +1,10 @@
 export const getAllEventsQuery = gql`
     query GetAllEvents {
+        events_aggregate {
+            aggregate {
+                count
+            }
+        }
         events {
             id
             title
@@ -27,6 +32,11 @@ export const getEventsQuery = gql`
         $skip: Int = 0,
         $take: Int = 10,
     ) {
+        events_aggregate {
+            aggregate {
+                count
+            }
+        }
         events(
             offset: $skip,
             limit: $take,
@@ -121,5 +131,42 @@ export const AddEvent = gql`
       ) {
         id
       }
+    }
+`;
+
+export const GetMyEvents = gql`
+    query GetMyEvents($user_id: Int!, $skip: Int!, $take: Int!){
+        events_aggregate {
+            aggregate {
+                count
+            }
+        }
+        events(
+            where:{
+                user_id: {
+                _eq: $user_id
+                }
+            },
+            offset: $skip,
+            limit: $take
+        ) {
+            id
+            title
+            user_id
+            category {
+                name
+            }
+            image
+            enterance_fee
+            start_date
+            end_date
+            location {
+                city
+                venue
+            }
+            tags {
+                name
+            }
+        }
     }
 `;
