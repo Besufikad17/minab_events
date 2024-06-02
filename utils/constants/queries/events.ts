@@ -63,41 +63,125 @@ export const getEventsQuery = gql`
 `;
 
 export const searchEventQuery = gql`
-    query SearchEvent($text: String = "%%", $category_id: Int, $max_fee: float8, $start_date: date, $end_date: date, $tags: [String!], $city: String, $skip: Int!, $take: Int!) {
+    query SearchEvent(
+        $skip: Int = 0, 
+        $take: Int = 6,
+        $text: String = "%%",
+        $min_enterance_fee: float8 = 0,
+        $max_enterance_fee: float8 = 0,
+        $category: String = "%%",
+        $city: String = "%%"
+    ) {
+        events_aggregate {
+            aggregate {
+                count
+            }
+        }
         events(
             where: {
-                title: {
-                    _ilike: $text
-                },
-                category_id: {
-                    _eq: $category_id
+                category:{
+                    name: {
+                        _ilike: $category
+                    }
                 },
                 enterance_fee: {
-                    _lte: $max_fee
+                    _gte: $min_enterance_fee,
+                    _lte: $max_enterance_fee
                 },
-                start_date: {
-                    _eq: $start_date
-                },
-                end_date: {
-                    _eq: $end_date
-                },
-                location: {
-                    city : {
-                    _eq : $city
+                location:{
+                    city:{
+                        _ilike: $city
                     }
                 },
-                tags: {
-                    name: {
-                    _in: $tags
-                    }
+                title: {
+                    _ilike: $text
                 }
             },
-            offset: $skip,
+            offset: $skip, 
             limit: $take
         ) {
             id
             title
-            description
+            user_id
+            category {
+                name
+            }
+            image
+            enterance_fee
+            start_date
+            end_date
+            location {
+                city
+                venue
+            }
+            tags {
+                name
+            }
+        }
+    }
+`;
+
+export const searchEventQueryWithTags = gql`
+    query SearchEvent(
+        $skip: Int = 0, 
+        $take: Int = 6,
+        $text: String = "%%",
+        $min_enterance_fee: float8 = 0,
+        $max_enterance_fee: float8 = 0,
+        $category: String = "%%",
+        $city: String = "%%",
+        $tags: [String!] = []
+    ) {
+        events_aggregate {
+            aggregate {
+                count
+            }
+        }
+        events(
+            where: {
+                category:{
+                    name: {
+                        _ilike: $category
+                    }
+                },
+                enterance_fee: {
+                    _gte: $min_enterance_fee,
+                    _lte: $max_enterance_fee
+                },
+                location:{
+                    city:{
+                        _ilike: $city
+                    }
+                },
+                tags: {
+                    name: {
+                        _in: $tags
+                    }
+                },
+                title: {
+                    _ilike: $text
+                }
+            },
+            offset: $skip, 
+            limit: $take
+        ) {
+            id
+            title
+            user_id
+            category {
+                name
+            }
+            image
+            enterance_fee
+            start_date
+            end_date
+            location {
+                city
+                venue
+            }
+            tags {
+                name
+            }
         }
     }
 `;
@@ -163,6 +247,33 @@ export const GetMyEvents = gql`
             location {
                 city
                 venue
+            }
+            tags {
+                name
+            }
+        }
+    }
+`;
+
+export const GetEventById = gql`
+    query GetEventById ($id: Int!) {
+        events(where:{ id: { _eq: $id } }) {
+            id
+            user_id
+            title
+            description
+            category {
+                name
+            }
+            image
+            enterance_fee
+            start_date
+            end_date
+            location {
+                id
+                city
+                venue
+                full_location
             }
             tags {
                 name

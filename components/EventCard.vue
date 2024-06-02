@@ -1,8 +1,11 @@
 <script lang="ts">
+import { number } from "yup";
+import { getDateTime } from "../utils/helpers/data";
 import RightArrowIcon from "./icons/RightArrow.vue";
 
 export default {
   props: {
+    id: Number,
     title: String,
     description: String,
     imageUrl: String,
@@ -13,6 +16,11 @@ export default {
     startDate: Date,
     endDate: Date,
   },
+  data() {
+    return {
+      fullDate: getDateTime(this.startDate!, this.endDate!)
+    }
+  },
   components: {
     RightArrowIcon
   },
@@ -20,7 +28,7 @@ export default {
 </script>
 <template>
   <div class="w-72 max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <a href="#">
+    <a :href="imageUrl" target="_blank">
       <img class="rounded-t-lg min-w-72" :src="imageUrl" alt="" />
     </a>
     <div class="p-5">
@@ -31,25 +39,12 @@ export default {
             category }}</span>
       </div>
       <br />
-      <a href="#">
+      <a :href="'/events/' + id">
         <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ title }}</h5>
       </a>
 
-      <!-- <div class="h-24">
-        <p class="text-ellipsis overflow-hidden line-clamp-4 mb-3 font-normal text-gray-700 dark:text-gray-400">{{
-          description }}</p>
-      </div><br /> -->
-      <p class="text-sm text-gray-500 dark:text-gray-400">{{
-        startDate?.getDate() === endDate?.getDate() ? startDate?.toDateString().split(' ')[1] + '' +
-          startDate?.toDateString().split(' ')[2] + ', ' + startDate?.toDateString().split(' ')[3] :
-          startDate?.getMonth() === endDate?.getMonth() ? startDate?.toDateString().split(' ')[1] + ' ' +
-            startDate?.toDateString().split(' ')[2] + ' - ' + endDate?.toDateString().split(' ')[2] + ', ' +
-            startDate?.toDateString().split(' ')[3] :
-            startDate?.toDateString().split(' ')[1] + ' ' + startDate?.toDateString().split(' ')[2] + ' - ' +
-            endDate?.toDateString().split(' ')[1] + ' ' + endDate?.toDateString().split(' ')[2] + ', ' +
-            startDate?.toDateString().split(' ')[3]
-      }}</p><br />
-      <a href="#"
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ fullDate }}</p><br />
+      <a :href="'/events/' + id"
         class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
         Read more
         <RightArrowIcon />

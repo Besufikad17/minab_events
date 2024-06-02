@@ -42,6 +42,7 @@ const onSubmit = handleSubmit(async values => {
     password: password.value,
     remember_me: rememberMe.value
   }).then((res) => {
+    // TODO expiry date based on rememberMe
     const token = useCookie('token');
     token.value = res!.data.Login.token;
     navigateTo("/home");
