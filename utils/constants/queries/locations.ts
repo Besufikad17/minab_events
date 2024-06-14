@@ -1,5 +1,5 @@
 export const getLocationsQuery = gql`
-    query GetCities {
+    query locations {
         locations {
             city
         }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GetEventById } from "../../utils/constants/queries/events";
+import { GetEventByIdQuery } from "../../utils/constants/queries/events";
 import { getDateTime } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
 import BookmarkIcon from "~/components/icons/Bookmark.vue";
@@ -21,7 +21,7 @@ if (token.value && token.value !== null) {
 
 isLoading.value = true;
 const variables = { id: route.params.id };
-const { data } = await useAsyncQuery(GetEventById, variables);
+const { data } = await useAsyncQuery(GetEventByIdQuery, variables);
 if (data.value?.events) {
     console.log(data.value.events[0]);
     event.value = data.value.events[0];
@@ -81,7 +81,7 @@ defineComponent({
                     </div>
                     <div v-if="decoded.id === event?.user_id" class="flex flex-row mt-4">
                         <!-- TODO Link to events form -->
-                        <a href="">
+                        <a :href="`/events/edit?id=${event?.id}`">
                             <button
                                 class="w-sm text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Edit</button>
                         </a>

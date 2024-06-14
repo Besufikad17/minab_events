@@ -7,16 +7,16 @@ import CloseIcon from "./icons/Close.vue";
 import ErrorIcon from "./icons/Error.vue";
 import LoadingIcon from "./icons/Loading.vue";
 import SuccessIcon from "./icons/Success.vue"
-import { AddEvent } from "~/utils/constants/queries/events";
+import { AddEventQuery } from "~/utils/constants/queries/events";
 import { jwtDecode } from "jwt-decode";
 
 const config = useRuntimeConfig();
 
+const route = useRoute();
 const isLoading = ref(false);
 const isError = ref(false);
 const message = ref("");
 const image = ref("");
-const tagsList = ref([] as string[]);
 const decoded = ref({} as any);
 
 const token = useCookie('token');
@@ -26,17 +26,32 @@ if(token.value && token.value !== null) {
   await navigateTo("/auth/login");
 }
 
+const props = defineProps({
+  type: String,
+  title: String,
+  description: String,
+  category: String,
+  enteranceFee: Number,
+  startDate: Date,
+  endDate: Date,
+  tags: String,
+  city: String,
+  venue: String
+});
+
+const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
+
 const { defineField, handleSubmit, errors } = useForm({
   initialValues: {
-    title: '',
-    description: '',
-    category: '0',
-    enteranceFee: 0,
-    startDate: new Date(),
-    endDate: new Date(),
-    tags: "",
-    city: "",
-    venue: ""
+    title: props.title || '',
+    description: props.description || '',
+    category: props.category || '0',
+    enteranceFee: props.enteranceFee || 0,
+    startDate: props.startDate?.toISOString().substring(0, 10) || new Date(),
+    endDate: props.endDate?.toISOString().substring(0, 10) || new Date(),
+    tags: props.tags || '',
+    city: props.city || '',
+    venue: props.venue || ''
   },
   validationSchema: {
     title: required,
@@ -73,7 +88,7 @@ const variables = {
   image: image.value
 };
 
-const { mutate: addEvent } = await useMutation(AddEvent, { variables });
+const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
 
 const onSubmit = handleSubmit(values => {
   console.log(values);
@@ -181,7 +196,7 @@ defineComponent({
   </div>
   <div class="flex flex-col justify-center items-center max-w-xl mt-4 mx-auto">
     <div class="flex flex-col items-center w-full max-w-xl p-4 bg-white  sm:p-6 md:p-8 dark:bg-gray-800">
-      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Create an event</h5><br />
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">{{ props.type === "create" ? 'Create an event' : 'Edit an event' }}</h5><br />
       <form class="space-y-6 w-full" @submit.prevent="onSubmit" action="#">
         <div>
           <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
@@ -238,14 +253,14 @@ defineComponent({
           <div class="w-full mr-8">
             <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
               date</label>
-            <input id="startDate" type="date"
+            <input id="startDate" type="date" v-model="startDate" v-bind="endDateProps"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
               placeholder="Select date">
           </div>
           <div class="w-full">
             <label for="endDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
               date</label>
-            <input id="endDate" type="date"
+            <input id="endDate" type="date" v-model="startDate" v-bind="startDateProps"
               class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
               placeholder="Select date">
           </div>
@@ -302,7 +317,7 @@ defineComponent({
           <LoadingIcon />
         </button>
         <button type="submit" 
-          class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Create</button>
+          class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">{{ type === "create" ? 'Create' : 'Edit' }}</button>
       </form>
     </div>
   </div>

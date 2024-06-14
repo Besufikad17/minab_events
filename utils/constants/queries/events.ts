@@ -186,7 +186,7 @@ export const searchEventQueryWithTags = gql`
     }
 `;
 
-export const AddEvent = gql`
+export const AddEventQuery = gql`
     mutation CreateEvent(
       $title: String!,   
       $description: String!,  
@@ -218,7 +218,7 @@ export const AddEvent = gql`
     }
 `;
 
-export const GetMyEvents = gql`
+export const GetMyEventsQuery = gql`
     query GetMyEvents($user_id: Int!, $skip: Int!, $take: Int!){
         events_aggregate {
             aggregate {
@@ -255,7 +255,7 @@ export const GetMyEvents = gql`
     }
 `;
 
-export const GetEventById = gql`
+export const GetEventByIdQuery = gql`
     query GetEventById ($id: Int!) {
         events(where:{ id: { _eq: $id } }) {
             id
@@ -263,6 +263,7 @@ export const GetEventById = gql`
             title
             description
             category {
+                id
                 name
             }
             image

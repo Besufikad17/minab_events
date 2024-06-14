@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   ],
   apollo: {
     autoImports: true,
+    authHeader: 'Authorization',
     clients: {
       default: {
         httpEndpoint: 'http://localhost:8080/v1/graphql'

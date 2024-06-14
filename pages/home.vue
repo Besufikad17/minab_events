@@ -61,14 +61,16 @@ const removeTag = (tag: string) => {
   tagsList.value = tagsList.value.filter((t) => t !== tag);
 }
 
-const getCities = async() => {
+const getLocations = async() => {
   const { data } = await useAsyncQuery(getLocationsQuery);
   console.log(data.value);
-  let result = data.value?.locations.map((location: Location) => location.city);
-  locations.value = result.filter((item: string, index: number) => result.indexOf(item) === index);
+  if(data.value) {
+    let result = data.value?.locations.map((location: Location) => location.city);
+    locations.value = result.filter((item: string, index: number) => result.indexOf(item) === index);
+  }
 }
 
-getCities();
+getLocations();
 
 const variables = {
   text: `%${text.value}%`,
@@ -132,7 +134,7 @@ maxTrigger();
 </script>
 
 <template>
-  <form class="flex items-center max-w-xl mx-auto mb-8">
+  <form class="flex items-center max-w-xl mx-auto mb-8 mt-8">
     <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button"
       class="text-gray bg-gray-50 border hover:border-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
       <FilterIcon /> Filters

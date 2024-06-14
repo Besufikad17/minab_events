@@ -1,14 +1,15 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { GetMyEvents } from "../../utils/constants/queries/events";
+  import { GetMyEventsQuery } from "../../utils/constants/queries/events";
   import type { Event } from "../../types/event";
   import AddIcon from "../../components/icons/Add.vue";
 
+  const route = useRoute();
   const isLoading = ref(false);
   const events = ref<Event[]>([]);
   const totalEvents = ref(0);
   const currentPage = ref(1);
-  const skip = ref(0);
+  const skip = ref(route.query.skip ? parseInt(route.query.skip as string) : 0);
   const take = ref(6);
 
   const variables = { 
@@ -17,38 +18,12 @@
     take: take.value
   };
 
-  const { data } = await useAsyncQuery(GetMyEvents, variables);
+  const { data } = await useAsyncQuery(GetMyEventsQuery, variables);
   if(data.value?.events) {
     events.value = data.value.events;
     totalEvents.value = data.value.events_aggregate.aggregate.count;
   }else {
     console.log('No events found');
-  }
-
-  const next = async() => {
-    if(currentPage.value * 6 < totalEvents.value) {
-      skip.value += 6;
-      currentPage.value += 1;
-      fetchMore();
-    }
-  }
-
-  const prev = () => {
-    if(skip.value > 0) {
-      skip.value -= 6;
-      currentPage.value -= 1;
-      fetchMore();
-    }
-  }
-
-  const fetchMore = async() => {
-    const { data } = await useAsyncQuery(GetMyEvents, { user_id: 79, skip: skip.value, take: take.value });
-    if(data.value?.events) {
-      events.value = data.value.events;
-      totalEvents.value = data.value.events_aggregate.aggregate.count;
-    }else {
-      console.log('No events found');
-    }
   }
 
   defineComponent({
@@ -61,7 +36,7 @@
   <client-only>
     <CircularProgressIndicator v-if="isLoading" />
     <div v-else class="flex flex-col items-center">
-      <h5 class="text-xl font-medium text-gray-900 dark:text-white">My Events</h5><br />
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white mt-8 mb-8">My Events</h5><br />
       <div v-if="events.length > 0" class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-32 mx-auto">
         <EventCard v-for="event in events" :key="event.id" :id="event.id" :title="event.title" :description="event.description"
           :imageUrl="event.image" :location="event.location.venue + ', ' + event.location.city"
@@ -81,12 +56,13 @@
     </div>
     <div class="flex flex-col items-center">
         <div class="inline-flex mt-10 xs:mt-0">
-            <button @click="prev" class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-purple-700 rounded-s hover:bg-purple-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                Prev
-            </button>
-            <button v-if="currentPage * 6 < totalEvents" @click="next" class="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-purple-700 rounded-s hover:bg-purple-900 dark:bg-purple-800 dark:border-purple-700 dark:text-white-400 dark:hover:bg-white-700 dark:hover:text-purple">
-                Next
-            </button>
+          <a v-if="skip >= 6" :href="`/events/my?skip=${skip > 0 ? skip - 6 : 0}`">
+            <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Prev</span>
+          </a>
+          <span v-else id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Prev</span>
+          <a v-if="currentPage * 6 < totalEvents && events.length >= 6" :href="`/events/my?skip=${skip + 6}`">
+            <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Next</span>
+          </a>
         </div>
       </div>
   </client-only>
