@@ -1,5 +1,5 @@
 <script lang="ts"></script>
 
 <template>
-  <EventForm />
+  <EventForm type="create" />
 </template>

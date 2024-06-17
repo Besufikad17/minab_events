@@ -2,12 +2,13 @@
 import { GetEventByIdQuery } from "../../utils/constants/queries/events";
 import { getDateTime } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
+import type { EventResponse, Events } from "~/types/event";
 import BookmarkIcon from "~/components/icons/Bookmark.vue";
 import LoadingIcon from "../../components/icons/Loading.vue";
 
 const route = useRoute();
 const isLoading = ref(false);
-const event = ref<Event | undefined>(undefined);
+const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
 const decoded = ref({} as any);
 
@@ -21,8 +22,8 @@ if (token.value && token.value !== null) {
 
 isLoading.value = true;
 const variables = { id: route.params.id };
-const { data } = await useAsyncQuery(GetEventByIdQuery, variables);
-if (data.value?.events) {
+const { data } = await useAsyncQuery<Events>(GetEventByIdQuery, variables);
+if (data.value) {
     console.log(data.value.events[0]);
     event.value = data.value.events[0];
     fullDate.value = getDateTime(new Date(event.value.start_date), new Date(event.value.end_date));
@@ -75,12 +76,11 @@ defineComponent({
                     </p>
                     <!-- TODO Link to browse events -->
                     <div v-if="event.tags.length > 0" class="grid-cols-4 gap-4 mt-4">
-                        Tags: <a href="#"><span id="badge-dismiss-default" v-for="tag in event?.tags" :key="tag"
-                                class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">#{{
+                        Tags: <a href="#"><span id="badge-dismiss-default" v-for="tag in event?.tags" :key="tag.id"
+                                class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
                                     tag.name }}</span></a>
                     </div>
                     <div v-if="decoded.id === event?.user_id" class="flex flex-row mt-4">
-                        <!-- TODO Link to events form -->
                         <a :href="`/events/edit?id=${event?.id}`">
                             <button
                                 class="w-sm text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Edit</button>

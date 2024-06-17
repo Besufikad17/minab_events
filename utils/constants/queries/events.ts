@@ -187,7 +187,7 @@ export const searchEventQueryWithTags = gql`
 `;
 
 export const AddEventQuery = gql`
-    mutation CreateEvent(
+    mutation CreateEventAction(
       $title: String!,   
       $description: String!,  
       $user_id: Int!,   
@@ -282,3 +282,76 @@ export const GetEventByIdQuery = gql`
         }
     }
 `;
+
+export const UpdateEventMutation = gql`
+    mutation UpdateEvent(
+        $id: Int!, 
+        $title: String!, 
+        $description: String!, 
+        $category_id: Int!, 
+        $location_id: Int!,
+        $city: String!,
+        $venue: String!,
+        $image: String!, 
+        $enterance_fee: float8!, 
+        $start_date: date!, 
+        $end_date: date!,
+        $tags: [tags_insert_input!]!
+    ) {
+    update_locations(
+        where: {
+            id:{
+                _eq: $location_id
+            }
+        },
+        _set: {
+            city: $city,
+            venue: $venue
+        }
+    ) {
+        returning {
+            city
+            venue
+        }
+    }
+    update_events(
+        where: {
+            id: {
+                _eq: $id
+            }
+        },
+        _set: {
+            title: $title,
+            description: $description,
+            image: $image,
+            category_id: $category_id,
+            enterance_fee: $enterance_fee,
+            start_date: $start_date,
+            end_date: $end_date,
+        }
+    ) {
+        returning {
+            title
+            description
+            image
+            start_date
+            end_date
+            enterance_fee
+        }
+    }
+    delete_tags(
+        where: {
+            event_id: {
+                _eq: $id
+            }
+        }
+    ) {
+        affected_rows
+    }
+    insert_tags(objects: $tags) {
+        returning {
+            id
+        }
+    }
+}
+`

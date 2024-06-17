@@ -7,16 +7,15 @@ import CloseIcon from "./icons/Close.vue";
 import ErrorIcon from "./icons/Error.vue";
 import LoadingIcon from "./icons/Loading.vue";
 import SuccessIcon from "./icons/Success.vue"
-import { AddEventQuery } from "~/utils/constants/queries/events";
+import { AddEventQuery, UpdateEventMutation } from "~/utils/constants/queries/events";
 import { jwtDecode } from "jwt-decode";
+import type { Tag } from "../types/tags";
 
 const config = useRuntimeConfig();
 
-const route = useRoute();
 const isLoading = ref(false);
 const isError = ref(false);
 const message = ref("");
-const image = ref("");
 const decoded = ref({} as any);
 
 const token = useCookie('token');
@@ -27,10 +26,13 @@ if(token.value && token.value !== null) {
 }
 
 const props = defineProps({
+  id: Number,
+  locationId: Number,
   type: String,
   title: String,
   description: String,
   category: String,
+  image: String,
   enteranceFee: Number,
   startDate: Date,
   endDate: Date,
@@ -39,6 +41,7 @@ const props = defineProps({
   venue: String
 });
 
+const image = ref(props.image || "");
 const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
 
 const { defineField, handleSubmit, errors } = useForm({
@@ -90,33 +93,83 @@ const variables = {
 
 const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
 
-const onSubmit = handleSubmit(values => {
+const onSubmit = handleSubmit(async values => {
   console.log(values);
   isLoading.value = true;
-  addEvent({
-    user_id: 79,
-    title: title.value,
-    description: description.value,
-    category_id: parseInt(category.value),
-    enterance_fee: enteranceFee.value,
-    start_date: new Date(startDate.value),
-    end_date: new Date(endDate.value),
-    tags: tagsList.value,
-    city: city.value,
-    venue: venue.value,
-    image: image.value
-  }).then(response => {
-    console.log(response);
-    message.value = "Event created successfully";
-    setTimeout(() => {
-      message.value = "";
-    }, 5000);
-    window.location.reload();
-  }).catch(err => {
-    isError.value = true;
-    message.value = "Failed to create event";
-    console.log(err)
-  });
+  if(props.type === "create") {
+    addEvent({
+      user_id: decoded.value.id,
+      title: title.value,
+      description: description.value,
+      category_id: parseInt(category.value),
+      enterance_fee: enteranceFee.value,
+      start_date: new Date(startDate.value),
+      end_date: new Date(endDate.value),
+      tags: tagsList.value,
+      city: city.value,
+      venue: venue.value,
+      image: image.value
+    }).then(response => {
+      console.log(response);
+      message.value = "Event created successfully";
+      setTimeout(() => {
+        message.value = "";
+      }, 5000);
+      window.location.reload();
+    }).catch(err => {
+      isError.value = true;
+      message.value = "Failed to create event";
+      console.log(err)
+    });
+  }else {
+    const variables = {
+      id: props.id,
+      title: title.value,
+      description: description.value,
+      category_id: parseInt(category.value),
+      enterance_fee: enteranceFee.value,
+      start_date: new Date(startDate.value),
+      end_date: new Date(endDate.value),
+      tags: [] as Tag[],
+      location_id: props.locationId,
+      city: city.value,
+      venue: venue.value,
+      image: image.value
+    };
+
+    const { mutate: editEvent } = await useMutation(UpdateEventMutation, { variables });
+
+    editEvent({
+      id: props.id,
+      title: title.value,
+      description: description.value,
+      category_id: parseInt(category.value),
+      enterance_fee: enteranceFee.value,
+      start_date: new Date(startDate.value),
+      end_date: new Date(endDate.value),
+      tags: tagsList.value.map(tag => {
+        return {
+          event_id: props.id,
+          name: tag
+        }
+      }),
+      location_id: props.locationId,
+      city: city.value,
+      venue: venue.value,
+      image: image.value
+    }).then(response => {
+      console.log(response);
+      message.value = "Event updated successfully";
+      setTimeout(() => {
+        message.value = "";
+      }, 5000);
+      navigateTo(`/events/${props.id}`);
+    }).catch(err => {
+      isError.value = true;
+      message.value = "Failed to update event";
+      console.log(err)
+    });
+  }
   isLoading.value = false;
 });
 
@@ -253,14 +306,14 @@ defineComponent({
           <div class="w-full mr-8">
             <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
               date</label>
-            <input id="startDate" type="date" v-model="startDate" v-bind="endDateProps"
+            <input id="startDate" type="date" v-model="startDate" v-bind="startDateProps"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
               placeholder="Select date">
           </div>
           <div class="w-full">
             <label for="endDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End
               date</label>
-            <input id="endDate" type="date" v-model="startDate" v-bind="startDateProps"
+            <input id="endDate" type="date" v-model="endDate" v-bind="endDateProps"
               class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
               placeholder="Select date">
           </div>

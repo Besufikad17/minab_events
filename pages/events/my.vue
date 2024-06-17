@@ -1,24 +1,34 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { GetMyEventsQuery } from "../../utils/constants/queries/events";
-  import type { Event } from "../../types/event";
+  import { jwtDecode } from "jwt-decode";
+  import type { EventResponse, Events } from "../../types/event";
   import AddIcon from "../../components/icons/Add.vue";
 
   const route = useRoute();
   const isLoading = ref(false);
-  const events = ref<Event[]>([]);
+  const events = ref<EventResponse[]>([]);
   const totalEvents = ref(0);
   const currentPage = ref(1);
   const skip = ref(route.query.skip ? parseInt(route.query.skip as string) : 0);
   const take = ref(6);
+  const decoded = ref({} as any);
+
+  const token = useCookie('token');
+  if (token.value && token.value !== null) {
+      decoded.value = jwtDecode(token.value!);
+      console.log(decoded.value);
+  } else {
+      await navigateTo("/auth/login");
+  }
 
   const variables = { 
-    user_id: 79,
+    user_id: decoded.value.id,
     skip: skip.value,
     take: take.value
   };
 
-  const { data } = await useAsyncQuery(GetMyEventsQuery, variables);
+  const { data } = await useAsyncQuery<Events>(GetMyEventsQuery, variables);
   if(data.value?.events) {
     events.value = data.value.events;
     totalEvents.value = data.value.events_aggregate.aggregate.count;
