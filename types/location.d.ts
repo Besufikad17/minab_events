@@ -3,3 +3,7 @@ export type Location = {
     city: string,
     venue: string
 };
+
+export type LocationResponse = {
+    locations: Location[]
+}

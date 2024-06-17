@@ -1,5 +1,4 @@
 <script lang="ts">
-import { number } from "yup";
 import { getDateTime } from "../utils/helpers/data";
 import RightArrowIcon from "./icons/RightArrow.vue";
 

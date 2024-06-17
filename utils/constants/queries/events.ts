@@ -354,4 +354,42 @@ export const UpdateEventMutation = gql`
         }
     }
 }
-`
+`;
+
+export  const DeleteEventMutation = gql`
+    mutation DeleteEvent($id: Int!, $location_id: Int!) {
+        delete_locations(
+            where: {
+                id: {
+                    _eq: $location_id
+                }
+            }
+        ) {
+            returning {
+                id
+            }
+        }
+        delete_events(
+            where: {
+                id: {
+                    _eq: $id
+                }
+            }
+        ) {
+            returning {
+                id
+            }
+        }
+        delete_tags(
+            where: {
+                event_id: {
+                    _eq: $id
+                }
+            }
+        ) {
+            returning {
+                id
+            }
+        }
+    }
+`;

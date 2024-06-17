@@ -7,8 +7,8 @@ import DateIcon from "../components/icons/Date.vue";
 import LoadingIcon from "../components/icons/Loading.vue";
 import { getLocationsQuery } from "../utils/constants/queries/locations";
 import { searchEventQuery, searchEventQueryWithTags } from "../utils/constants/queries/events";
-import type { Event } from "../types/event";
-import type { Location } from "../types/location";
+import type { Event, EventResponse, Events } from "../types/event";
+import type { Location, LocationResponse } from "../types/location";
 
 defineComponent({
   components: {
@@ -23,7 +23,7 @@ defineComponent({
 
 const route = useRoute();
 const isLoading = ref(false);
-const events = ref<Event[]>([]);
+const events = ref<EventResponse[]>([]);
 const totalEvents = ref(0);
 const currentPage = ref(1);
 const skip = ref(route.query.skip ? parseInt(route.query.skip as string) : 0);
@@ -62,7 +62,7 @@ const removeTag = (tag: string) => {
 }
 
 const getLocations = async() => {
-  const { data } = await useAsyncQuery(getLocationsQuery);
+  const { data } = await useAsyncQuery<LocationResponse>(getLocationsQuery);
   console.log(data.value);
   if(data.value) {
     let result = data.value?.locations.map((location: Location) => location.city);
@@ -84,7 +84,7 @@ const variables = {
 };
 
 isLoading.value = true;
-const { data } = await useAsyncQuery(searchEventQuery, variables);
+const { data } = await useAsyncQuery<Events>(searchEventQuery, variables);
 if(data.value?.events) {
   events.value = data.value.events;
   totalEvents.value = data.value.events_aggregate.aggregate.count;
@@ -108,7 +108,7 @@ const search = async() => {
   if(tags.value.length === 0) {
     console.log(variables);
     isLoading.value = true;
-    const { data } = await useAsyncQuery(searchEventQuery, variables); 
+    const { data } = await useAsyncQuery<Events>(searchEventQuery, variables); 
     console.log(data.value);
     if(data.value?.events) {
       events.value = data.value.events;
@@ -119,7 +119,7 @@ const search = async() => {
     // FIXME browse with tags
     console.log(variables);
     isLoading.value = true;
-    const { data } = await useAsyncQuery(searchEventQueryWithTags, variables); 
+    const { data } = await useAsyncQuery<Events>(searchEventQueryWithTags, variables); 
     console.log(data.value);
     if(data.value?.events) {
       events.value = data.value.events;

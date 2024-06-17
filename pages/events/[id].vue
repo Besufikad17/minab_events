@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { GetEventByIdQuery } from "../../utils/constants/queries/events";
+import { GetEventByIdQuery, DeleteEventMutation } from "../../utils/constants/queries/events";
 import { getDateTime } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
 import type { EventResponse, Events } from "~/types/event";
 import BookmarkIcon from "~/components/icons/Bookmark.vue";
 import LoadingIcon from "../../components/icons/Loading.vue";
+import ErrorIcon from "~/components/icons/Error.vue";
+import SuccessIcon from "~/components/icons/Success.vue";
+import CloseIcon from "~/components/icons/Close.vue";
 
 const route = useRoute();
 const isLoading = ref(false);
+const isError = ref(false);
+const message = ref("");
 const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
 const decoded = ref({} as any);
@@ -32,15 +37,61 @@ if (data.value) {
 }
 isLoading.value = false;
 
+const deleteEvent = async() => {
+    const variables = {
+        id: event.value?.id,
+        location_id: event.value?.location.id
+    };
+    const { mutate: deleteEventMutation } = await useMutation(DeleteEventMutation, { variables });
+    deleteEventMutation({
+        id: event.value?.id,
+        location_id: event.value?.location.id
+    }).then((result) => {
+        message.value = "Event deleted successfully";
+        setTimeout(() => {
+            message.value = "";
+        }, 5000);
+        navigateTo(`/events/my`);
+    }).catch((error) => {
+        console.log(error);
+        isError.value = true;
+        message.value = "Failed to delete event";
+        console.log(error);
+    });
+}
+
+function toggle() {
+  message.value = "";
+  isError.value = false;
+}
+
 defineComponent({
     components: {
         BookmarkIcon,
-        LoadingIcon
+        ErrorIcon,
+        LoadingIcon,
+        SuccessIcon,
+        CloseIcon
     }
 });
 </script>
 
 <template>
+    <div id="toast-top-right" v-if="message.length !== 0" class="fixed flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800" role="alert">
+        <div v-if="isError" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+            <ErrorIcon />
+            <span class="sr-only">Error icon</span>
+        </div>
+        <div v-else class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-purple-100 rounded-lg dark:bg-purple-800 dark:text-purple-200">
+            <SuccessIcon />
+            <span class="sr-only">Success icon</span>
+        </div>
+        <div class="ms-3 text-sm font-normal">{{ message }}</div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-top-right" aria-label="Close" @click="toggle">
+            <span class="sr-only">Close</span>
+            <CloseIcon />
+        </button>
+    </div>
     <client-only>
         <CircularProgressIndicator v-if="isLoading" />
         <div v-else-if="event === undefined" class="flex flex-col items-center text-center w-full">
@@ -85,8 +136,7 @@ defineComponent({
                             <button
                                 class="w-sm text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">Edit</button>
                         </a>
-                        <!-- TODO add event listener -->
-                        <button
+                        <button @click="deleteEvent"
                             class="w-sm text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
                     </div>
                     <!-- TODO check if it's bookmarked or reserved -->
