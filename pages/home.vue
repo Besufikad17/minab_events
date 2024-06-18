@@ -70,8 +70,6 @@ const getLocations = async() => {
   }
 }
 
-getLocations();
-
 const variables = {
   text: `%${text.value}%`,
   city: `%${city.value}%`,
@@ -134,8 +132,10 @@ maxTrigger();
 </script>
 
 <template>
-  <form class="flex items-center max-w-xl mx-auto mb-8 mt-8">
-    <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button"
+  <!-- FIXME Hydration error -->
+  <client-only>
+    <form class="flex items-center max-w-xl mx-auto mb-8 mt-8">
+    <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button" @click="getLocations"
       class="text-gray bg-gray-50 border hover:border-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
       <FilterIcon /> Filters
     </button>
@@ -258,6 +258,7 @@ maxTrigger();
       </div>
     </div>
   </form>
+  </client-only>
   <client-only>
     <CircularProgressIndicator v-if="isLoading" />
     <div v-else-if="events.length === 0" class="flex flex-col items-center text-center w-full">

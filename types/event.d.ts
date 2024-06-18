@@ -1,3 +1,4 @@
+import type { Bookmark } from "./bookmark";
 import type { Tag } from "./tags";
 
 export type Location = {
@@ -39,6 +40,7 @@ export type EventResponse = {
   start_date: string;
   end_date: string;
   tags: Tag[];
+  bookmarks?: Bookmark[];
 }
 
 export type Events = {

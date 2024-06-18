@@ -1,3 +1,4 @@
+import type { Bookmark } from "~/types/bookmark";
 import type { Tag } from "~/types/tags";
 
 export const getDateTime = (startDate: Date, endDate: Date) => {
@@ -14,4 +15,8 @@ export const getDateTime = (startDate: Date, endDate: Date) => {
 
 export const getTagsList = (tags: Tag[]) => {
     return tags.map(tag => tag.name).join();
+}
+
+export const isBookmarked = (userId: number, bookmarks: Bookmark[]) => {
+    return bookmarks.some(bookmark => bookmark.user_id === userId);
 }

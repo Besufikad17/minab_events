@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { GetEventByIdQuery, DeleteEventMutation } from "../../utils/constants/queries/events";
-import { getDateTime } from "../../utils/helpers/data";
+import { BookmarkMutation, UnBookmarkMutation } from "../../utils/constants/queries/bookmarks";
+import { getDateTime, isBookmarked as checkIsBookmarked } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
 import type { EventResponse, Events } from "~/types/event";
 import BookmarkIcon from "~/components/icons/Bookmark.vue";
+import BookmarkedIcon from "~/components/icons/Bookmarked.vue";
 import LoadingIcon from "../../components/icons/Loading.vue";
 import ErrorIcon from "~/components/icons/Error.vue";
 import SuccessIcon from "~/components/icons/Success.vue";
@@ -12,6 +14,7 @@ import CloseIcon from "~/components/icons/Close.vue";
 const route = useRoute();
 const isLoading = ref(false);
 const isError = ref(false);
+const isBookmarked = ref(false);
 const message = ref("");
 const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
@@ -28,10 +31,12 @@ if (token.value && token.value !== null) {
 isLoading.value = true;
 const variables = { id: route.params.id };
 const { data } = await useAsyncQuery<Events>(GetEventByIdQuery, variables);
+console.log(data);
 if (data.value) {
     console.log(data.value.events[0]);
     event.value = data.value.events[0];
     fullDate.value = getDateTime(new Date(event.value.start_date), new Date(event.value.end_date));
+    isBookmarked.value = checkIsBookmarked(decoded.value.id, event.value?.bookmarks!);
 } else {
     console.log('Event not found'!!);
 }
@@ -60,6 +65,54 @@ const deleteEvent = async() => {
     });
 }
 
+const bookmarkEvent = () => {
+    const variables = {
+        event_id: event.value?.id,
+        user_id: decoded.value.id
+    };    
+
+    const { mutate: bookmarkEventMutation } = useMutation(BookmarkMutation, { variables });
+    bookmarkEventMutation({
+        event_id: event.value?.id,
+        user_id: decoded.value.id
+    }).then((result) => {
+        message.value = "Event bookmarked successfully";
+        setTimeout(() => {
+            message.value = "";
+        }, 5000);
+        window.location.reload();
+    }).catch((error) => {
+        console.log(error);
+        isError.value = true;
+        message.value = "Failed to bookmark event";
+        console.log(error);
+    });
+}
+
+const unBookmarkEvent = () => {
+    const variables = {
+        event_id: event.value?.id,
+        user_id: decoded.value.id
+    };    
+
+    const { mutate: bookmarkEventMutation } = useMutation(UnBookmarkMutation, { variables });
+    bookmarkEventMutation({
+        event_id: event.value?.id,
+        user_id: decoded.value.id
+    }).then((result) => {
+        message.value = "Event unbookmarked successfully";
+        setTimeout(() => {
+            message.value = "";
+        }, 5000);
+        window.location.reload();
+    }).catch((error) => {
+        console.log(error);
+        isError.value = true;
+        message.value = "Failed to unbookmark event";
+        console.log(error);
+    });
+}
+
 function toggle() {
   message.value = "";
   isError.value = false;
@@ -68,6 +121,7 @@ function toggle() {
 defineComponent({
     components: {
         BookmarkIcon,
+        BookmarkedIcon,
         ErrorIcon,
         LoadingIcon,
         SuccessIcon,
@@ -139,15 +193,18 @@ defineComponent({
                         <button @click="deleteEvent"
                             class="w-sm text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
                     </div>
-                    <!-- TODO check if it's bookmarked or reserved -->
+                    <!-- TODO check if it's reserved -->
                     <div v-else class="flex flex-row mt-4">
                         <!-- TODO add event listener -->
                         <button
                             class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
                             Attend
                         </button>
-                        <!-- TODO add event listener -->
-                        <button
+                        <button v-if="isBookmarked" @click="unBookmarkEvent"
+                            class="text-purple-700 border border-purple-700 inline-flex focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900">
+                            <BookmarkedIcon /> Bookmarked
+                        </button>
+                        <button v-else @click="bookmarkEvent"
                             class="text-purple-700 border border-purple-700 inline-flex focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900">
                             <BookmarkIcon /> Bookmark
                         </button>

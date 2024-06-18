@@ -279,6 +279,9 @@ export const GetEventByIdQuery = gql`
             tags {
                 name
             }
+            bookmarks {
+                user_id
+            }
         }
     }
 `;
