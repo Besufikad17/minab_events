@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { GetEventByIdQuery, DeleteEventMutation } from "../../utils/constants/queries/events";
 import { BookmarkMutation, UnBookmarkMutation } from "../../utils/constants/queries/bookmarks";
-import { getDateTime, isBookmarked as checkIsBookmarked } from "../../utils/helpers/data";
+import { ReserveEventMutation } from "../../utils/constants/queries/reservations";
+import { getDateTime, isBookmarked as checkIsBookmarked, isReserved as checkIsReserved } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
 import type { EventResponse, Events } from "~/types/event";
 import BookmarkIcon from "~/components/icons/Bookmark.vue";
 import BookmarkedIcon from "~/components/icons/Bookmarked.vue";
-import LoadingIcon from "../../components/icons/Loading.vue";
+import LoadingIcon from "~/components/icons/Loading.vue";
 import ErrorIcon from "~/components/icons/Error.vue";
 import SuccessIcon from "~/components/icons/Success.vue";
 import CloseIcon from "~/components/icons/Close.vue";
@@ -15,6 +16,7 @@ const route = useRoute();
 const isLoading = ref(false);
 const isError = ref(false);
 const isBookmarked = ref(false);
+const isReserved = ref(false);
 const message = ref("");
 const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
@@ -37,6 +39,7 @@ if (data.value) {
     event.value = data.value.events[0];
     fullDate.value = getDateTime(new Date(event.value.start_date), new Date(event.value.end_date));
     isBookmarked.value = checkIsBookmarked(decoded.value.id, event.value?.bookmarks!);
+    isReserved.value = checkIsReserved(decoded.value.id, event.value?.reserved_events!);
 } else {
     console.log('Event not found'!!);
 }
@@ -109,6 +112,30 @@ const unBookmarkEvent = () => {
         console.log(error);
         isError.value = true;
         message.value = "Failed to unbookmark event";
+        console.log(error);
+    });
+}
+
+const reserveEvent = () => {
+    const variables = {
+        event_id: event.value?.id,
+        user_id: decoded.value.id
+    };    
+
+    const { mutate: reserveEventMutation } = useMutation(ReserveEventMutation, { variables });
+    reserveEventMutation({
+        event_id: event.value?.id,
+        user_id: decoded.value.id
+    }).then((result) => {
+        message.value = "Event reserved successfully";
+        setTimeout(() => {
+            message.value = "";
+        }, 5000);
+        window.location.reload();
+    }).catch((error) => {
+        console.log(error);
+        isError.value = true;
+        message.value = "Failed to reserve event";
         console.log(error);
     });
 }
@@ -193,10 +220,12 @@ defineComponent({
                         <button @click="deleteEvent"
                             class="w-sm text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
                     </div>
-                    <!-- TODO check if it's reserved -->
                     <div v-else class="flex flex-row mt-4">
-                        <!-- TODO add event listener -->
-                        <button
+                        <button v-if="isReserved"  @click="reserveEvent"
+                            class="text-white bg-purple-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600" disabled>
+                            Reserved
+                        </button>
+                        <button v-else  @click="reserveEvent"
                             class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
                             Attend
                         </button>

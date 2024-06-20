@@ -282,6 +282,9 @@ export const GetEventByIdQuery = gql`
             bookmarks {
                 user_id
             }
+            reserved_events {
+                user_id
+            }
         }
     }
 `;

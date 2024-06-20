@@ -1,4 +1,5 @@
 import type { Bookmark } from "~/types/bookmark";
+import type { Reservation } from "~/types/reservation";
 import type { Tag } from "~/types/tags";
 
 export const getDateTime = (startDate: Date, endDate: Date) => {
@@ -19,4 +20,8 @@ export const getTagsList = (tags: Tag[]) => {
 
 export const isBookmarked = (userId: number, bookmarks: Bookmark[]) => {
     return bookmarks.some(bookmark => bookmark.user_id === userId);
+}
+
+export const isReserved = (userId: number, reservations: Reservation[]) => {
+    return reservations.some(reservation => reservation.user_id === userId);
 }
