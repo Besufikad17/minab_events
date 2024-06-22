@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import EventIcon from "../components/icons/Event.vue";
-import SearchIcon from "../components/icons/Search.vue";
-import FilterIcon from "../components/icons/Filter.vue";
-import CloseIcon from "../components/icons/Close.vue";
-import DateIcon from "../components/icons/Date.vue";
-import LoadingIcon from "../components/icons/Loading.vue";
-import { getLocationsQuery } from "../utils/constants/queries/locations";
-import { searchEventQuery, searchEventQueryWithTags } from "../utils/constants/queries/events";
-import type { Event, EventResponse, Events } from "../types/event";
-import type { Location, LocationResponse } from "../types/location";
+import EventIcon from "../../components/icons/Event.vue";
+import SearchIcon from "../../components/icons/Search.vue";
+import FilterIcon from "../../components/icons/Filter.vue";
+import CloseIcon from "../../components/icons/Close.vue";
+import DateIcon from "../../components/icons/Date.vue";
+import LoadingIcon from "../../components/icons/Loading.vue";
+import { getLocationsQuery } from "../../utils/constants/queries/locations";
+import { searchEventQuery, searchEventQueryWithTags } from "../../utils/constants/queries/events";
+import type { EventResponse, Events } from "../../types/event";
+import type { Location, LocationResponse } from "../../types/location";
 
 defineComponent({
   components: {
@@ -61,15 +61,6 @@ const removeTag = (tag: string) => {
   tagsList.value = tagsList.value.filter((t) => t !== tag);
 }
 
-const getLocations = async() => {
-  const { data } = await useAsyncQuery<LocationResponse>(getLocationsQuery);
-  console.log(data.value);
-  if(data.value) {
-    let result = data.value?.locations.map((location: Location) => location.city);
-    locations.value = result.filter((item: string, index: number) => result.indexOf(item) === index);
-  }
-}
-
 const variables = {
   text: `%${text.value}%`,
   city: `%${city.value}%`,
@@ -88,6 +79,13 @@ if(data.value?.events) {
   totalEvents.value = data.value.events_aggregate.aggregate.count;
 }else {
   console.log('No events found');
+}
+const { data: result } = await useAsyncQuery<LocationResponse>(getLocationsQuery);
+if(result.value) {
+  let queryResult = result.value?.locations.map((location: Location) => location.city);
+  locations.value = queryResult.filter((item: string, index: number) => queryResult.indexOf(item) === index);
+}else {
+  console.log('No locations found');
 }
 isLoading.value = false;
 
@@ -132,10 +130,8 @@ maxTrigger();
 </script>
 
 <template>
-  <!-- FIXME Hydration error -->
-  <client-only>
-    <form class="flex items-center max-w-xl mx-auto mb-8 mt-8">
-    <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button" @click="getLocations"
+  <form class="flex items-center max-w-xl mx-auto mb-8 mt-8">
+    <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button"
       class="text-gray bg-gray-50 border hover:border-purple-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
       <FilterIcon /> Filters
     </button>
@@ -258,7 +254,6 @@ maxTrigger();
       </div>
     </div>
   </form>
-  </client-only>
   <client-only>
     <CircularProgressIndicator v-if="isLoading" />
     <div v-else-if="events.length === 0" class="flex flex-col items-center text-center w-full">

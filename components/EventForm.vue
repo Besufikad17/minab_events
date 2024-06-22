@@ -6,7 +6,7 @@ import BirrIcon from "./icons/Birr.vue";
 import CloseIcon from "./icons/Close.vue";
 import ErrorIcon from "./icons/Error.vue";
 import LoadingIcon from "./icons/Loading.vue";
-import SuccessIcon from "./icons/Success.vue"
+import SuccessIcon from "./icons/Success.vue";
 import { AddEventQuery, UpdateEventMutation } from "~/utils/constants/queries/events";
 import { jwtDecode } from "jwt-decode";
 import type { Tag } from "../types/tags";
