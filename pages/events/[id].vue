@@ -192,7 +192,7 @@ defineComponent({
                     </h5>
                     <div class="flex flex-row justify-between">
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ fullDate }}</p>
-                        <a :href="`/home?category=${event?.category.name}`"><span id="badge-dismiss-default"
+                        <a :href="`/events?category=${event?.category.name}`"><span id="badge-dismiss-default"
                             class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 hover:underline rounded dark:bg-purple-900 dark:text-purple-300">{{
                                 event?.category.name }}</span></a>
                     </div><br />
@@ -206,7 +206,6 @@ defineComponent({
                         <span class="text-sm text-gray-500 dark:text-gray-400">{{ event?.location.full_location
                             }}</span>
                     </p>
-                    <!-- TODO Link to browse events -->
                     <div v-if="event.tags.length > 0" class="grid-cols-4 gap-4 mt-4">
                         Tags: <a href="#"><span id="badge-dismiss-default" v-for="tag in event?.tags" :key="tag.id"
                                 class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{

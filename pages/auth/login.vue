@@ -46,7 +46,7 @@ const onSubmit = handleSubmit(async values => {
       maxAge: rememberMe.value ? 60 * 60 * 24 * 7 : 60 * 60 * 24,
     });
     token.value = res!.data.Login.token;
-    navigateTo("/home");
+    navigateTo("/events");
   }).catch((err) => {
     console.log(err);
     isError.value = true;

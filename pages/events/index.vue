@@ -112,7 +112,6 @@ const search = async() => {
     }
     isLoading.value = false;
   }else {
-    // FIXME browse with tags
     console.log(variables);
     isLoading.value = true;
     const { data } = await useAsyncQuery<Events>(searchEventQueryWithTags, variables); 
@@ -268,11 +267,11 @@ maxTrigger();
       </div>
       <div class="flex flex-col items-center">
         <div class="inline-flex mt-10 xs:mt-0">
-          <a v-if="skip >= 6" :href="`/home?skip=${skip > 0 ? skip - 6 : 0}&category=${category}&city=${city}&text=${text}&min=${minPrice}&max=${maxPrice}`">
+          <a v-if="skip >= 6" :href="`/events?skip=${skip > 0 ? skip - 6 : 0}&category=${category}&city=${city}&text=${text}&min=${minPrice}&max=${maxPrice}`">
             <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Prev</span>
           </a>
           <span v-else id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Prev</span>
-          <a v-if="currentPage * 6 < totalEvents && events.length >= 6" :href="`/home?skip=${skip + 6}&category=${category}&city=${city}&text=${text}&min=${minPrice}&max=${maxPrice}`">
+          <a v-if="currentPage * 6 < totalEvents && events.length >= 6" :href="`/events?skip=${skip + 6}&category=${category}&city=${city}&text=${text}&min=${minPrice}&max=${maxPrice}`">
             <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Next</span>
           </a>
         </div>

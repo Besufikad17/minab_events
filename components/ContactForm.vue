@@ -2,6 +2,7 @@
     import { useForm } from 'vee-validate';
     import { required } from '~/utils/helpers/validation';
     import { ref } from 'vue';
+    import { SendCommentMutation } from '~/utils/constants/queries/comments';
     import CloseIcon from "./icons/Close.vue";
     import ErrorIcon from "./icons/Error.vue";
     import LoadingIcon from "./icons/Loading.vue";
@@ -33,8 +34,32 @@
         isError.value = false;
     }
 
+    const variables = {
+        name: name.value,
+        email: email.value,
+        message: message.value,
+    };
+
     const onSubmit = handleSubmit(async values => {
         console.log(values);
+        isLoading.value = true;
+        const { mutate: sendComment } = await useMutation(SendCommentMutation, { variables });
+        sendComment({
+          name: name.value,
+          email: email.value,
+          message: message.value,
+        }).then(res => {
+          console.log(response);
+          message.value = "Comment sent successfully";
+          setTimeout(() => {
+            message.value = "";
+          }, 5000);
+          window.location.reload();
+        }).catch(err => {
+            isError.value = true;
+            message.value = "Failed to send comment";
+            console.log(err);
+        });
     });
 </script>
 

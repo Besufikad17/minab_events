@@ -64,7 +64,7 @@ const onSubmit = handleSubmit(values => {
       });
       token.value = res!.data.Register.token;
       isLoading.value = false;
-      navigateTo("/home");
+      navigateTo("/events");
     }).catch((err) => {
       console.log(err);
       isError.value = true;
