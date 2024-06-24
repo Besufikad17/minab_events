@@ -5,7 +5,8 @@ export default defineNuxtConfig({
     public: {
       GQL_HOST: process.env.GQL_HOST,
       CLOUDINARY_UPLOAD_PRESET: process.env.CLOUDINARY_CLOUD_PRESET,
-      CLOUDINARY_URL: process.env.CLOUDINARY_URL
+      CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+      CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     }
   },
   devtools: { enabled: true },

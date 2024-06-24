@@ -1,6 +1,7 @@
 import type { Bookmark } from "~/types/bookmark";
 import type { Reservation } from "~/types/reservation";
 import type { Tag } from "~/types/tags";
+import crypto from 'crypto';
 
 export const getDateTime = (startDate: Date, endDate: Date) => {
     if(startDate.getDate() === endDate.getDate()) {
@@ -24,4 +25,8 @@ export const isBookmarked = (userId: number, bookmarks: Bookmark[]) => {
 
 export const isReserved = (userId: number, reservations: Reservation[]) => {
     return reservations.some(reservation => reservation.user_id === userId);
+}
+
+export const sign = (uploadPreset: string, timestamp: number, secret: string) => {
+    return `timestamp=${timestamp}${secret}&upload_preset=${uploadPreset}`;
 }

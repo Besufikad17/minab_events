@@ -32,7 +32,8 @@ const props = defineProps({
   title: String,
   description: String,
   category: String,
-  image: String,
+  images: Array<String>,
+  thumbnail :String,
   enteranceFee: Number,
   startDate: Date,
   endDate: Date,
@@ -41,7 +42,8 @@ const props = defineProps({
   venue: String
 });
 
-const image = ref(props.image || "");
+const images = ref(props.images ? props.images : props.thumbnail ? [props.thumbnail] : [] as string[]);
+const thumbnail = ref(props.thumbnail || "");
 const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
 
 const { defineField, handleSubmit, errors } = useForm({
@@ -50,8 +52,8 @@ const { defineField, handleSubmit, errors } = useForm({
     description: props.description || '',
     category: props.category || '0',
     enteranceFee: props.enteranceFee || 0,
-    startDate: props.startDate?.toISOString().substring(0, 10) || new Date(),
-    endDate: props.endDate?.toISOString().substring(0, 10) || new Date(),
+    startDate: props.startDate?.toISOString().substring(0, 10) || new Date().toISOString().substring(0, 10),
+    endDate: props.endDate?.toISOString().substring(0, 10) || new Date().toISOString().substring(0, 10),
     tags: props.tags || '',
     city: props.city || '',
     venue: props.venue || ''
@@ -88,7 +90,7 @@ const variables = {
   tags: tagsList.value,
   city: city.value,
   venue: venue.value,
-  image: image.value
+  image: images.value
 };
 
 const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
@@ -108,7 +110,7 @@ const onSubmit = handleSubmit(async values => {
       tags: tagsList.value,
       city: city.value,
       venue: venue.value,
-      image: image.value
+      image: images.value
     }).then(response => {
       console.log(response);
       message.value = "Event created successfully";
@@ -134,7 +136,7 @@ const onSubmit = handleSubmit(async values => {
       location_id: props.locationId,
       city: city.value,
       venue: venue.value,
-      image: image.value
+      image: images.value
     };
 
     const { mutate: editEvent } = await useMutation(UpdateEventMutation, { variables });
@@ -156,7 +158,7 @@ const onSubmit = handleSubmit(async values => {
       location_id: props.locationId,
       city: city.value,
       venue: venue.value,
-      image: image.value
+      image: images.value
     }).then(response => {
       console.log(response);
       message.value = "Event updated successfully";
@@ -173,27 +175,38 @@ const onSubmit = handleSubmit(async values => {
   isLoading.value = false;
 });
 
-function onFileChange(e: any) {
-  var files = e.target.files || e.dataTransfer.files;
-  if (!files.length)
-    return;
-  
+function upload(file: any) {
   const formData = new FormData();
-  formData.append('file', files[0]);
+  formData.append('file', file);
   formData.append('upload_preset', config.public.CLOUDINARY_UPLOAD_PRESET);
 
   fetch(config.public.CLOUDINARY_URL, {
     method: 'POST',
     body: formData,
   })
-    .then(response => response.json())
-    .then((data) => {
-      if (data.secure_url !== '') {
-        console.log(data.secure_url);
-        image.value = data.secure_url;
-      }
-    })
-    .catch(err => console.error(err));
+  .then(response => response.json())
+  .then((data) => {
+    if (data.secure_url !== '') {
+      console.log(data.secure_url);
+      images.value.push(data.secure_url);
+    }
+  })
+  .catch(err => console.error(err));
+}
+
+function onFileChange(e: any) {
+  var files = e.target.files || e.dataTransfer.files;
+  if (!files.length)
+    return;
+  
+  for (let i = 0; i < files.length; i++) {
+    upload(files[i]);
+  }
+}
+
+function removeImage(image: string) {
+  console.log(image);
+  images.value = images.value.filter((img) => img !== image);
 }
 
 function addTag() {
@@ -281,13 +294,14 @@ defineComponent({
           <span class="text-sm text-red-600">{{ errors.category }}</span>
         </div>
         <div>
-          <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="event_poster">Upload
-            file</label>
-          <input
-            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            aria-describedby="event_poster_help" id="event_poster" type="file" v-on:change="onFileChange">
-          <div class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="user_avatar_help">An event poster grabs user's
-            attention.</div>
+          <!-- FIXME multiple file upload -->
+          <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="event_posters">Upload
+            files</label>
+          <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="event-posters" type="file" multiple v-on:change="onFileChange">
+          <div class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="user_avatar_help">Upload multiple images to grab user's attention. The first image will be taken as thumbnail.</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 mt-5 gap-5">
+            <UploadedImage v-for="image in images" :image="(image as string)" :onClose="removeImage" />
+          </div>
         </div>
         <div>
           <label for="enteranceFee" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enterance
@@ -318,6 +332,7 @@ defineComponent({
               placeholder="Select date">
           </div>
         </div>
+        <!-- FIXME use Google maps API -->
         <div class="flex flex-row w-full">
           <div class="mr-8">
             <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
@@ -365,6 +380,7 @@ defineComponent({
             </button>
           </span>
         </div>
+        <!-- TODO Add ticket -->
         <button v-if="isLoading" type="submit"
           class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" disabled>
           <LoadingIcon />

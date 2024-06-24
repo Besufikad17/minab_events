@@ -42,6 +42,7 @@
     :enteranceFee="event?.enterance_fee"
     :startDate="new Date(event?.start_date as string)"
     :endDate="new Date(event?.end_date as string)"
+    :thumbnail="event?.image"
     :tags="tagsList"
     :locationId="event?.location.id"
     :city="event?.location.city"
