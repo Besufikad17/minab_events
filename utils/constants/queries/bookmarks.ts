@@ -68,7 +68,7 @@ export const GetBookmarksQuery = gql`
                     city
                     venue
                 }
-                image
+                thumbnail
                 start_date
                 end_date
             }  

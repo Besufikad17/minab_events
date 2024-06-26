@@ -1,13 +1,8 @@
 import type { Bookmark } from "./bookmark";
+import type { Image } from "./images";
+import type { Location } from "./location";
 import type { Reservation } from "./reservation";
 import type { Tag } from "./tags";
-
-export type Location = {
-  id: number;
-  city: string;
-  venue: string;
-  full_location: string;
-}
 
 export type Event = {
   id: number;
@@ -18,11 +13,12 @@ export type Event = {
   };
   title: string;
   description: string;
-  image: string;
+  thumbnail: string;
   enterance_fee: number;
   location: Location;
   start_date: Date;
   end_date: Date;
+  images: Image[];
   tags: string[];
 };
 
@@ -35,14 +31,15 @@ export type EventResponse = {
   };
   title: string;
   description: string;
-  image: string;
+  thumbnail: string;
   enterance_fee: number;
   location: Location;
   start_date: string;
   end_date: string;
-  tags: Tag[];
   bookmarks?: Bookmark[];
+  images?: Image[];
   reserved_events?: Reservation[];
+  tags: Tag[];
 }
 
 export type Events = {

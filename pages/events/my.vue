@@ -49,7 +49,7 @@
       <h5 class="text-xl font-medium text-gray-900 dark:text-white mt-8 mb-8">My Events</h5><br />
       <div v-if="events.length > 0" class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-32 mx-auto">
         <EventCard v-for="event in events" :key="event.id" :id="event.id" :title="event.title" :description="event.description"
-          :imageUrl="event.image" :location="event.location.venue + ', ' + event.location.city"
+          :imageUrl="event.thumbnail" :location="event.location.venue + ', ' + event.location.city"
           :startDate="new Date(event.start_date)" :endDate="new Date(event.end_date)" :category="event.category.name">{{ event }}</EventCard>
       </div>
       <div v-else class="flex flex-col items-center text-center w-full">

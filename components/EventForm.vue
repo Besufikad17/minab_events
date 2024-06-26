@@ -90,13 +90,13 @@ const variables = {
   tags: tagsList.value,
   city: city.value,
   venue: venue.value,
-  image: images.value
+  images: images.value
 };
 
 const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
 
 const onSubmit = handleSubmit(async values => {
-  console.log(values);
+  console.log(images.value);
   isLoading.value = true;
   if(props.type === "create") {
     addEvent({
@@ -110,7 +110,7 @@ const onSubmit = handleSubmit(async values => {
       tags: tagsList.value,
       city: city.value,
       venue: venue.value,
-      image: images.value
+      images: images.value
     }).then(response => {
       console.log(response);
       message.value = "Event created successfully";

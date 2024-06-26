@@ -46,7 +46,7 @@ export const GetReservedEventsQuery = gql`
                     city
                     venue
                 }
-                image
+                thumbnail
                 start_date
                 end_date
             }

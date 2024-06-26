@@ -43,7 +43,7 @@
       <h5 class="text-xl font-medium text-gray-900 dark:text-white mt-8 mb-8">Reserved Events</h5><br />
       <div v-if="events.length > 0" class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-32 mx-auto">
         <EventCard v-for="event in events" :key="event.event.id" :id="event.event.id" :title="event.event.title" :description="event.event.description"
-          :imageUrl="event.event.image" :location="event.event.location.venue + ', ' + event.event.location.city"
+          :imageUrl="event.event.thumbnail" :location="event.event.location.venue + ', ' + event.event.location.city"
           :startDate="new Date(event.event.start_date)" :endDate="new Date(event.event.end_date)" :category="event.event.category.name">{{ event }}</EventCard>
       </div>
       <div v-else class="flex flex-col items-center text-center w-full">

@@ -21,6 +21,7 @@ const message = ref("");
 const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
 const decoded = ref({} as any);
+const index = ref(0);
 
 const token = useCookie('token');
 if (token.value && token.value !== null) {
@@ -145,6 +146,18 @@ function toggle() {
   isError.value = false;
 }
 
+function prev() {
+    if(index.value > 0) {
+        index.value -= 1;
+    }
+}
+
+function next() {
+    if(index.value < event!.value!.images!.length - 1) {
+        index.value += 1;
+    }
+}
+
 defineComponent({
     components: {
         BookmarkIcon,
@@ -180,12 +193,22 @@ defineComponent({
             <p class="text-2xl">Event not found :(</p><br />
         </div>
         <div v-else class="flex flex-col justify-center items-center max-w-4xl mt-8 mx-auto">
-            <div class="flex flex-col md:flex-row">
-                <div>
-                    <a :href="event?.image" target="_blank">
-                        <img class="min-w-full md:min-w-72 md:max-w-96 px-5 md:pt-0 md:px-0" :src="event?.image"
-                            alt="" />
-                    </a><br />
+            <div class="flex flex-col md:flex-row space-x-2">
+                <div class="mb-5">
+                    <div class="grid gap-4 px-5">
+                        <div>
+                            <a :href="event?.thumbnail" target="_blank">
+                                <img class="min-w-full md:min-w-72 md:max-w-96 md:pt-0 md:px-0 rounded-lg" :src="event.thumbnail" alt="">
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div v-for="(image, index) in event.images" :key="index">
+                                <a :href="image.url" target="_blank">
+                                    <img class="min-w-full md:min-w-36 md:max-w-48 md:pt-0 md:px-0 rounded-lg" :src="image.url" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="pl-5 pr-5">
                     <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event?.title }}

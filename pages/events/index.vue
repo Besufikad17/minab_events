@@ -75,6 +75,7 @@ const variables = {
 isLoading.value = true;
 const { data } = await useAsyncQuery<Events>(searchEventQuery, variables);
 if(data.value?.events) {
+  console.log(data.value?.events)
   events.value = data.value.events;
   totalEvents.value = data.value.events_aggregate.aggregate.count;
 }else {
@@ -256,13 +257,13 @@ maxTrigger();
   <client-only>
     <CircularProgressIndicator v-if="isLoading" />
     <div v-else-if="events.length === 0" class="flex flex-col items-center text-center w-full">
-        <img src="../assets/images/empty.jpg" width="300" height="300" />
+        <img src="../../assets/images/empty.jpg" width="300" height="300" />
         <p class="text-2xl">No events :(</p><br />
     </div>    
     <div v-else class="flex flex-col items-center">
       <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-32 mx-auto">
         <EventCard v-for="event in events" :key="event.id" :id="event.id" :title="event.title" :description="event.description"
-          :imageUrl="event.image" :location="event.location.venue + ', ' + event.location.city"
+          :imageUrl="event.thumbnail" :location="event.location.venue + ', ' + event.location.city"
           :startDate="new Date(event.start_date)" :endDate="new Date(event.end_date)" :category="event.category.name">{{ event }}</EventCard>
       </div>
       <div class="flex flex-col items-center">

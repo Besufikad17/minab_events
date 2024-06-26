@@ -1,67 +1,3 @@
-export const getAllEventsQuery = gql`
-    query GetAllEvents {
-        events_aggregate {
-            aggregate {
-                count
-            }
-        }
-        events {
-            id
-            title
-            user_id
-            category {
-                name
-            }
-            image
-            enterance_fee
-            start_date
-            end_date
-            location {
-                city
-            venue
-            }
-            tags {
-                name
-            }
-        }
-    }
-`;
-
-export const getEventsQuery = gql`
-    query SearchEvent(
-        $skip: Int = 0,
-        $take: Int = 10,
-    ) {
-        events_aggregate {
-            aggregate {
-                count
-            }
-        }
-        events(
-            offset: $skip,
-            limit: $take,
-        ) {
-            id
-            title
-            user_id
-            category {
-                name
-            }
-            image
-            enterance_fee
-            start_date
-            end_date
-            location {
-                city
-                venue
-            }
-            tags {
-                name
-            }
-        }
-    }
-`;
-
 export const searchEventQuery = gql`
     query SearchEvent(
         $skip: Int = 0, 
@@ -106,7 +42,7 @@ export const searchEventQuery = gql`
             category {
                 name
             }
-            image
+            thumbnail
             enterance_fee
             start_date
             end_date
@@ -171,7 +107,7 @@ export const searchEventQueryWithTags = gql`
             category {
                 name
             }
-            image
+            thumbnail
             enterance_fee
             start_date
             end_date
@@ -194,7 +130,7 @@ export const AddEventQuery = gql`
       $category_id: Int!,   
       $city: String!,
       $venue: String!,
-      $image: String!,   
+      $images: [String!]!,   
       $enterance_fee: float8!,   
       $start_date: date!,   
       $end_date: date!,
@@ -207,7 +143,7 @@ export const AddEventQuery = gql`
         category_id: $category_id,
         city: $city,
         venue: $venue,
-        image: $image,
+        images: $images,
         enterance_fee: $enterance_fee,
         start_date: $start_date,
         end_date: $end_date,
@@ -240,7 +176,7 @@ export const GetMyEventsQuery = gql`
             category {
                 name
             }
-            image
+            thumbnail
             enterance_fee
             start_date
             end_date
@@ -266,7 +202,10 @@ export const GetEventByIdQuery = gql`
                 id
                 name
             }
-            image
+            thumbnail
+            images {
+                url
+            }
             enterance_fee
             start_date
             end_date
