@@ -237,68 +237,83 @@ export const UpdateEventMutation = gql`
         $location_id: Int!,
         $city: String!,
         $venue: String!,
-        $image: String!, 
+        $thumbnail: String!,
+        $images: [images_insert_input!]!, 
         $enterance_fee: float8!, 
         $start_date: date!, 
         $end_date: date!,
         $tags: [tags_insert_input!]!
     ) {
-    update_locations(
-        where: {
-            id:{
-                _eq: $location_id
+        update_locations(
+            where: {
+                id:{
+                    _eq: $location_id
+                }
+            },
+            _set: {
+                city: $city,
+                venue: $venue
             }
-        },
-        _set: {
-            city: $city,
-            venue: $venue
-        }
-    ) {
-        returning {
-            city
-            venue
-        }
-    }
-    update_events(
-        where: {
-            id: {
-                _eq: $id
-            }
-        },
-        _set: {
-            title: $title,
-            description: $description,
-            image: $image,
-            category_id: $category_id,
-            enterance_fee: $enterance_fee,
-            start_date: $start_date,
-            end_date: $end_date,
-        }
-    ) {
-        returning {
-            title
-            description
-            image
-            start_date
-            end_date
-            enterance_fee
-        }
-    }
-    delete_tags(
-        where: {
-            event_id: {
-                _eq: $id
+        ) {
+            returning {
+                city
+                venue
             }
         }
-    ) {
-        affected_rows
-    }
-    insert_tags(objects: $tags) {
-        returning {
-            id
+        update_events(
+            where: {
+                id: {
+                    _eq: $id
+                }
+            },
+            _set: {
+                title: $title,
+                description: $description,
+                category_id: $category_id,
+                thumbnail: $thumbnail,
+                enterance_fee: $enterance_fee,
+                start_date: $start_date,
+                end_date: $end_date,
+            }
+        ) {
+            returning {
+                title
+                description
+                thumbnail
+                start_date
+                end_date
+                enterance_fee
+            }
+        }
+        delete_tags(
+            where: {
+                event_id: {
+                    _eq: $id
+                }
+            }
+        ) {
+            affected_rows
+        }
+        insert_tags(objects: $tags) {
+            returning {
+                id
+            }
+        }
+        delete_images(
+            where: {
+                event_id: {
+                    _eq: $id
+                }
+            }
+        ) {
+            affected_rows
+        }
+        insert_images(objects: $images) {
+            returning {
+                id
+            }
         }
     }
-}
 `;
 
 export  const DeleteEventMutation = gql`

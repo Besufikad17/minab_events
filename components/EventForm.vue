@@ -10,6 +10,7 @@ import SuccessIcon from "./icons/Success.vue";
 import { AddEventQuery, UpdateEventMutation } from "~/utils/constants/queries/events";
 import { jwtDecode } from "jwt-decode";
 import type { Tag } from "../types/tags";
+import type { Image } from "~/types/images";
 
 const config = useRuntimeConfig();
 
@@ -136,7 +137,8 @@ const onSubmit = handleSubmit(async values => {
       location_id: props.locationId,
       city: city.value,
       venue: venue.value,
-      image: images.value
+      thumbnail: thumbnail.value,
+      images: [] as Image[]
     };
 
     const { mutate: editEvent } = await useMutation(UpdateEventMutation, { variables });
@@ -158,7 +160,13 @@ const onSubmit = handleSubmit(async values => {
       location_id: props.locationId,
       city: city.value,
       venue: venue.value,
-      image: images.value
+      thumbnail: images.value[0] as string,
+      images: images.value.map(image => {
+        return {
+          event_id: props.id,
+          url: image
+        } as Image
+      })
     }).then(response => {
       console.log(response);
       message.value = "Event updated successfully";
