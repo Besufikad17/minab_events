@@ -1,6 +1,6 @@
 import type { Bookmark } from "./bookmark";
 import type { Image } from "./images";
-import type { Location } from "./location";
+import type { Location } from "./locations";
 import type { Reservation } from "./reservation";
 import type { Tag } from "./tags";
 

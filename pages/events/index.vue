@@ -8,7 +8,7 @@ import LoadingIcon from "../../components/icons/Loading.vue";
 import { getLocationsQuery } from "../../utils/constants/queries/locations";
 import { searchEventQuery, searchEventQueryWithTags } from "../../utils/constants/queries/events";
 import type { EventResponse, Events } from "../../types/event";
-import type { Location, LocationResponse } from "../../types/location";
+import type { Location, LocationResponse } from "../../types/locations";
 
 defineComponent({
   components: {

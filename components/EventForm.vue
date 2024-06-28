@@ -6,16 +6,19 @@ import BirrIcon from "./icons/Birr.vue";
 import CloseIcon from "./icons/Close.vue";
 import ErrorIcon from "./icons/Error.vue";
 import LoadingIcon from "./icons/Loading.vue";
+import LocationIcon from "./icons/Location.vue";
 import SuccessIcon from "./icons/Success.vue";
 import { AddEventQuery, UpdateEventMutation } from "~/utils/constants/queries/events";
 import { jwtDecode } from "jwt-decode";
 import type { Tag } from "../types/tags";
 import type { Image } from "~/types/images";
+import type { Location, GeoApifyResponse } from "~/types/locations";
 
 const config = useRuntimeConfig();
 
 const isLoading = ref(false);
 const isError = ref(false);
+const isSelected = ref(false);
 const message = ref("");
 const decoded = ref({} as any);
 
@@ -46,6 +49,8 @@ const props = defineProps({
 const images = ref(props.images ? props.images : props.thumbnail ? [props.thumbnail] : [] as string[]);
 const thumbnail = ref(props.thumbnail || "");
 const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
+const searchResult = ref([] as Location[]);
+const selectedLocation = ref({} as Location);
 
 const { defineField, handleSubmit, errors } = useForm({
   initialValues: {
@@ -57,7 +62,8 @@ const { defineField, handleSubmit, errors } = useForm({
     endDate: props.endDate?.toISOString().substring(0, 10) || new Date().toISOString().substring(0, 10),
     tags: props.tags || '',
     city: props.city || '',
-    venue: props.venue || ''
+    venue: props.venue || '',
+    location: ''
   },
   validationSchema: {
     title: required,
@@ -66,7 +72,8 @@ const { defineField, handleSubmit, errors } = useForm({
     startDate: required,
     endDate: required,
     city: required,
-    venue: required
+    venue: required,
+    location: required
   }
 });
 
@@ -79,6 +86,7 @@ const [endDate, endDateProps] = defineField('endDate');
 const [tags, tagsProps] = defineField('tags');
 const [city, cityProps] = defineField('city');
 const [venue, venueProps] = defineField('venue');
+const [location, locationProps] = defineField('location');
 
 const variables = {
   user_id: decoded.value.id,
@@ -96,7 +104,7 @@ const variables = {
 
 const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
 
-const onSubmit = handleSubmit(async values => {
+const onSubmit = handleSubmit(async () => {
   console.log(images.value);
   isLoading.value = true;
   if(props.type === "create") {
@@ -234,12 +242,39 @@ function toggle() {
   isError.value = false;
 }
 
+const selectLocation = (index: number) => {
+  selectedLocation.value = searchResult.value[index];
+  location.value = searchResult.value[index].venue;
+  isSelected.value = true;
+  console.log(selectedLocation.value);
+}
+
+const searchLocation = async() => {
+  searchResult.value = [];
+  isSelected.value = false;
+  const result = await $fetch<GeoApifyResponse>(`${config.public.PLACE_API_URL}?text=${location.value}&apiKey=${config.public.PLACE_API_KEY}`);
+  if(result.features) {
+   result.features.map(feature => {
+      if(feature.properties.name) {
+        const newLocation = {
+          venue: feature.properties.name,
+          city: feature.properties.city,
+          longitude: feature.properties.lon,
+          latitude: feature.properties.lat
+        } as Location;
+        searchResult.value.push(newLocation);
+      }
+    });
+  }
+}
+
 defineComponent({
   components: {
     BirrIcon,
     CloseIcon,
     ErrorIcon,
     LoadingIcon,
+    LocationIcon,
     SuccessIcon
   }
 });
@@ -302,7 +337,6 @@ defineComponent({
           <span class="text-sm text-red-600">{{ errors.category }}</span>
         </div>
         <div>
-          <!-- FIXME multiple file upload -->
           <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="event_posters">Upload
             files</label>
           <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="event-posters" type="file" multiple v-on:change="onFileChange">
@@ -341,22 +375,33 @@ defineComponent({
           </div>
         </div>
         <!-- FIXME use Google maps API -->
-        <div class="flex flex-row w-full">
-          <div class="mr-8">
-            <label for="city" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">City</label>
-            <input type="city" name="city" id="city" v-model="city" v-bind="cityProps"
+        <div>
+          <label for="location" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
+          <div class="flex flex-row w-full">
+            <div class="mr-4 w-full">
+              <input type="text" name="location" id="location" v-model="location" v-bind="locationProps"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              placeholder="City" />
-            <span class="text-sm text-red-600">{{ errors.city }}</span>
+              placeholder="Location" @input="searchLocation"  />
+              <div v-if="location.length > 0 && !isSelected" class="z-10 overflow-y-scroll w-60 h-40 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
+                <ul class="list-none">
+                  <li v-for="(location, i) in searchResult" className=" cursor-pointer border-gray-300 p-2 px-4 text-gray-700 hover:bg-purple-400" @click="() => selectLocation(i)">
+                    {{ location.venue }}
+                    <p id="helper-radio-text-4" class="text-xs font-normal text-gray-500 dark:text-gray-300">{{ location.city }}</p>
+                  </li>
+                </ul>
+              </div>
+            </div>  
+            <div class="flex flex-row w-full items-center">
+              <LocationIcon v-if="selectedLocation.venue" />
+              <client-only>
+                <a :href="`/events/map?lat=${selectedLocation.latitude}&lng=${selectedLocation.longitude}`">
+                  <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 hover:underline rounded dark:text-purple-300">{{ selectedLocation.venue }}</span>
+                </a>
+              </client-only>
+            </div>
           </div>
-          <div>
-            <label for="venue" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Venue</label>
-            <input type="venue" name="venue" id="venue" v-model="venue" v-bind="venueProps"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-              placeholder="Venue" />
-            <span class="text-sm text-red-600">{{ errors.venue }}</span>
-          </div>
-        </div>
+          <span class="text-sm text-red-600">{{ errors.location }}</span>
+        </div> 
         <div>
           <label for="tags" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
           <div class="flex flex-row w-full">
@@ -400,3 +445,23 @@ defineComponent({
   </div>
   <Footer />
 </template>
+
+<style>
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  ::-webkit-scrollbar-track {
+      background: #fff;
+      border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background: #5521B5;
+      border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+      background: #fff;
+  }
+</style>
