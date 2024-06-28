@@ -48,5 +48,7 @@
     :locationId="event?.location.id"
     :city="event?.location.city"
     :venue="event?.location.venue"
+    :lat="event?.location.latitude"
+    :lng="event?.location.longtiude"
   />
 </template>

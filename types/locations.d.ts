@@ -2,7 +2,7 @@ export type Location = {
     id?: number;
     city: string;
     venue: string;
-    longitude: number;
+    longtiude: number;
     latitude: number;
     full_location?: string;
 }

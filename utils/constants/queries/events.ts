@@ -124,33 +124,37 @@ export const searchEventQueryWithTags = gql`
 
 export const AddEventQuery = gql`
     mutation CreateEventAction(
-      $title: String!,   
-      $description: String!,  
-      $user_id: Int!,   
-      $category_id: Int!,   
-      $city: String!,
-      $venue: String!,
-      $images: [String!]!,   
-      $enterance_fee: float8!,   
-      $start_date: date!,   
-      $end_date: date!,
-      $tags: [String!]!
+        $title: String!,   
+        $description: String!,  
+        $user_id: Int!,   
+        $category_id: Int!,   
+        $city: String!,
+        $venue: String!,
+        $lat: float8!,
+        $lng: float8!,
+        $images: [String!]!,   
+        $enterance_fee: float8!,   
+        $start_date: date!,   
+        $end_date: date!,
+        $tags: [String!]!
     ) {
-      CreateEvent(
-        title: $title,
-        description: $description,
-        user_id: $user_id,
-        category_id: $category_id,
-        city: $city,
-        venue: $venue,
-        images: $images,
-        enterance_fee: $enterance_fee,
-        start_date: $start_date,
-        end_date: $end_date,
-        tags: $tags
-      ) {
-        id
-      }
+        CreateEvent(
+            title: $title,
+            description: $description,
+            user_id: $user_id,
+            category_id: $category_id,
+            city: $city,
+            venue: $venue,
+            lat: $lat,
+            lng: $lng,
+            images: $images,
+            enterance_fee: $enterance_fee,
+            start_date: $start_date,
+            end_date: $end_date,
+            tags: $tags
+        ) {
+            id
+        }
     }
 `;
 
@@ -213,6 +217,8 @@ export const GetEventByIdQuery = gql`
                 id
                 city
                 venue
+                latitude
+                longtiude
                 full_location
             }
             tags {
@@ -237,6 +243,8 @@ export const UpdateEventMutation = gql`
         $location_id: Int!,
         $city: String!,
         $venue: String!,
+        $lat: float8!,
+        $lng: float8!,
         $thumbnail: String!,
         $images: [images_insert_input!]!, 
         $enterance_fee: float8!, 
@@ -252,7 +260,9 @@ export const UpdateEventMutation = gql`
             },
             _set: {
                 city: $city,
-                venue: $venue
+                venue: $venue,
+                latitude: $lat,
+                longtiude: $lng
             }
         ) {
             returning {

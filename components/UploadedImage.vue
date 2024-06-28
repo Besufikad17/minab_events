@@ -12,7 +12,7 @@
         <img alt="upload preview" :src="image" class="img-preview w-full h-full sticky object-cover rounded-md bg-contain" />
         <section class="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
             <div class="flex">
-                <a :href="image">
+                <a target="_blank" :href="image">
                     <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 hover:underline rounded dark:bg-purple-900 dark:text-purple-300">Preview</span></a>
                 <p class="p-1 size text-xs"></p>
                 <button class="delete ml-auto focus:outline-none hover:bg-red-500 p-1 rounded-md" @click="(e) => onClose!(image)">

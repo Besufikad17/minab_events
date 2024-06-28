@@ -226,8 +226,12 @@ defineComponent({
                         <span class="text-sm text-gray-500 dark:text-gray-400">{{ event?.enterance_fee }} Birr</span>
                     </p>
                     <p>Location:
-                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ event?.location.full_location
-                            }}</span>
+                        <client-only>
+                            <a target="_blank" :href="`/events/map?lat=${event.location.latitude}&lng=${event.location.longtiude}`">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ event?.location.full_location
+                                    }}</span>
+                            </a>
+                        </client-only>
                     </p>
                     <div v-if="event.tags.length > 0" class="grid-cols-4 gap-4 mt-4">
                         Tags: <a href="#"><span id="badge-dismiss-default" v-for="tag in event?.tags" :key="tag.id"

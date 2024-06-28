@@ -43,14 +43,21 @@ const props = defineProps({
   endDate: Date,
   tags: String,
   city: String,
-  venue: String
+  venue: String,
+  lat: Number,
+  lng: Number
 });
 
 const images = ref(props.images ? props.images : props.thumbnail ? [props.thumbnail] : [] as string[]);
 const thumbnail = ref(props.thumbnail || "");
 const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
 const searchResult = ref([] as Location[]);
-const selectedLocation = ref({} as Location);
+const selectedLocation = ref({
+  city: props.city,
+  venue: props.venue,
+  latitude: props.lat,
+  longtiude: props.lng
+} as Location);
 
 const { defineField, handleSubmit, errors } = useForm({
   initialValues: {
@@ -71,8 +78,6 @@ const { defineField, handleSubmit, errors } = useForm({
     category: required,
     startDate: required,
     endDate: required,
-    city: required,
-    venue: required,
     location: required
   }
 });
@@ -84,8 +89,6 @@ const [enteranceFee, enteranceFeeProps] = defineField('enteranceFee');
 const [startDate, startDateProps] = defineField('startDate');
 const [endDate, endDateProps] = defineField('endDate');
 const [tags, tagsProps] = defineField('tags');
-const [city, cityProps] = defineField('city');
-const [venue, venueProps] = defineField('venue');
 const [location, locationProps] = defineField('location');
 
 const variables = {
@@ -97,8 +100,10 @@ const variables = {
   start_date: new Date(startDate.value),
   end_date: new Date(endDate.value),
   tags: tagsList.value,
-  city: city.value,
-  venue: venue.value,
+  city: selectedLocation.value.city,
+  venue: selectedLocation.value.venue,
+  lat: selectedLocation.value.latitude,
+  lng: selectedLocation.value.longtiude,
   images: images.value
 };
 
@@ -117,8 +122,10 @@ const onSubmit = handleSubmit(async () => {
       start_date: new Date(startDate.value),
       end_date: new Date(endDate.value),
       tags: tagsList.value,
-      city: city.value,
-      venue: venue.value,
+      city: selectedLocation.value.city,
+      venue: selectedLocation.value.venue,
+      lat: selectedLocation.value.latitude,
+      lng: selectedLocation.value.longtiude,
       images: images.value
     }).then(response => {
       console.log(response);
@@ -143,8 +150,10 @@ const onSubmit = handleSubmit(async () => {
       end_date: new Date(endDate.value),
       tags: [] as Tag[],
       location_id: props.locationId,
-      city: city.value,
-      venue: venue.value,
+      city: selectedLocation.value.city,
+      venue: selectedLocation.value.venue,
+      lat: selectedLocation.value.latitude,
+      lng: selectedLocation.value.longtiude,
       thumbnail: thumbnail.value,
       images: [] as Image[]
     };
@@ -166,8 +175,10 @@ const onSubmit = handleSubmit(async () => {
         }
       }),
       location_id: props.locationId,
-      city: city.value,
-      venue: venue.value,
+      city: selectedLocation.value.city,
+      venue: selectedLocation.value.venue,
+      lat: selectedLocation.value.latitude,
+      lng: selectedLocation.value.longtiude,
       thumbnail: images.value[0] as string,
       images: images.value.map(image => {
         return {
@@ -259,7 +270,7 @@ const searchLocation = async() => {
         const newLocation = {
           venue: feature.properties.name,
           city: feature.properties.city,
-          longitude: feature.properties.lon,
+          longtiude: feature.properties.lon,
           latitude: feature.properties.lat
         } as Location;
         searchResult.value.push(newLocation);
@@ -394,7 +405,7 @@ defineComponent({
             <div class="flex flex-row w-full items-center">
               <LocationIcon v-if="selectedLocation.venue" />
               <client-only>
-                <a :href="`/events/map?lat=${selectedLocation.latitude}&lng=${selectedLocation.longitude}`">
+                <a target="_blank" :href="`/events/map?lat=${selectedLocation.latitude}&lng=${selectedLocation.longtiude}`">
                   <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 hover:underline rounded dark:text-purple-300">{{ selectedLocation.venue }}</span>
                 </a>
               </client-only>
@@ -448,7 +459,7 @@ defineComponent({
 
 <style>
   ::-webkit-scrollbar {
-    width: 5px;
+    width: 1px;
   }
   
   ::-webkit-scrollbar-track {
