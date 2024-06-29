@@ -4,6 +4,7 @@ import { BookmarkMutation, UnBookmarkMutation } from "../../utils/constants/quer
 import { ReserveEventMutation } from "../../utils/constants/queries/reservations";
 import { getDateTime, isBookmarked as checkIsBookmarked, isReserved as checkIsReserved } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
+import { initCarousels } from "flowbite";
 import type { EventResponse, Events } from "~/types/event";
 import BookmarkIcon from "~/components/icons/Bookmark.vue";
 import BookmarkedIcon from "~/components/icons/Bookmarked.vue";
@@ -146,17 +147,11 @@ function toggle() {
   isError.value = false;
 }
 
-function prev() {
-    if(index.value > 0) {
-        index.value -= 1;
-    }
-}
-
-function next() {
-    if(index.value < event!.value!.images!.length - 1) {
-        index.value += 1;
-    }
-}
+onMounted(() => {
+    setTimeout(() => {
+        initCarousels();
+    }, 1000)
+})
 
 defineComponent({
     components: {
@@ -192,28 +187,40 @@ defineComponent({
             <img src="../../assets/images/empty.jpg" width="300" height="300" />
             <p class="text-2xl">Event not found :(</p><br />
         </div>
-        <div v-else class="flex flex-col justify-center items-center max-w-4xl mt-8 mx-auto">
-            <div class="flex flex-col md:flex-row space-x-2">
-                <div class="mb-5">
-                    <div class="grid gap-4 px-5">
-                        <div>
-                            <a :href="event?.thumbnail" target="_blank">
-                                <img class="min-w-full md:min-w-72 md:max-w-96 md:pt-0 md:px-0 rounded-lg" :src="event.thumbnail" alt="">
-                            </a>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div v-for="(image, index) in event.images" :key="index">
-                                <a :href="image.url" target="_blank">
-                                    <img class="min-w-full md:min-w-36 md:max-w-48 md:pt-0 md:px-0 rounded-lg" :src="image.url" alt="">
-                                </a>
+        <div v-else class="flex flex-col max-w-4xl mt-8 mx-auto">
+            <div class="flex flex-col justify-center md:flex-row w-full">
+                <div class="w-full md:w-96 mb-5">
+                    <div id="default-carousel" class="relative w-full sm-px-6" data-carousel="static">
+                        <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+                            <div v-if="event.images && event.images.length > 0" v-for="(image, index) in event.images" :key="index" class="hidden duration-700 ease-in-out" data-carousel-item>
+                                <img :src="image.url" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+                            </div>
+                            <div v-else class="hidden duration-700 ease-in-out" data-carousel-item>
+                                <img :src="event.thumbnail" class="absolute block w-full -translate-x-1/2  left-1/2" alt="...">
                             </div>
                         </div>
+                        <button type="button" class="absolute top-0 md:-top-10 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple/30 dark:bg-gray-800/30 group-hover:bg-purple/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-purple dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                                <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                </svg>
+                                <span class="sr-only">Previous</span>
+                            </span>
+                        </button>
+                        <button type="button" class="absolute top-0 md:-top-10 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                                <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                </svg>
+                                <span class="sr-only">Next</span>
+                            </span>
+                        </button>
                     </div>
                 </div>
                 <div class="pl-5 pr-5">
                     <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event?.title }}
                     </h5>
-                    <div class="flex flex-row justify-between">
+                    <div class="flex flex-row space-x-8">
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ fullDate }}</p>
                         <a :href="`/events?category=${event?.category.name}`"><span id="badge-dismiss-default"
                             class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 hover:underline rounded dark:bg-purple-900 dark:text-purple-300">{{

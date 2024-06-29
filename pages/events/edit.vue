@@ -23,6 +23,7 @@
     const { data } = await useAsyncQuery<Events>(GetEventByIdQuery, variables);
     if (data.value) {
         event.value = data.value.events[0];
+        console.log(event.value.images);
         if(event.value) {
           const tags = event.value.tags.map((tag) => tag.name);
           tagsList.value = tags.join();

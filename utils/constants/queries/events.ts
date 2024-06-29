@@ -246,7 +246,7 @@ export const UpdateEventMutation = gql`
         $lat: float8!,
         $lng: float8!,
         $thumbnail: String!,
-        $images: [images_insert_input!]!, 
+        $images: [AddImagesImagesInsertInput!]!, 
         $enterance_fee: float8!, 
         $start_date: date!, 
         $end_date: date!,
@@ -318,10 +318,8 @@ export const UpdateEventMutation = gql`
         ) {
             affected_rows
         }
-        insert_images(objects: $images) {
-            returning {
-                id
-            }
+        AddImages(images: $images) {
+            affected_rows
         }
     }
 `;

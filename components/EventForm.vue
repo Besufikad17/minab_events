@@ -18,7 +18,6 @@ const config = useRuntimeConfig();
 
 const isLoading = ref(false);
 const isError = ref(false);
-const isSelected = ref(false);
 const message = ref("");
 const decoded = ref({} as any);
 
@@ -52,6 +51,7 @@ const images = ref(props.images ? props.images : props.thumbnail ? [props.thumbn
 const thumbnail = ref(props.thumbnail || "");
 const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
 const searchResult = ref([] as Location[]);
+const isSelected = ref(props.city ? true : false);
 const selectedLocation = ref({
   city: props.city,
   venue: props.venue,
@@ -70,7 +70,7 @@ const { defineField, handleSubmit, errors } = useForm({
     tags: props.tags || '',
     city: props.city || '',
     venue: props.venue || '',
-    location: ''
+    location: selectedLocation.value.venue || ''
   },
   validationSchema: {
     title: required,
