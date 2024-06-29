@@ -227,7 +227,13 @@ function onFileChange(e: any) {
     return;
   
   for (let i = 0; i < files.length; i++) {
-    upload(files[i]);
+    const reader = new FileReader();
+    let rawImg;
+    reader.onloadend = () => {
+      rawImg = reader.result;
+      images.value.push(rawImg as string);
+    }
+    reader.readAsDataURL(files[i]);
   }
 }
 
