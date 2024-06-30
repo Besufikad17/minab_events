@@ -202,31 +202,17 @@ const onSubmit = handleSubmit(async () => {
   isLoading.value = false;
 });
 
-function upload(file: any) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', config.public.CLOUDINARY_UPLOAD_PRESET);
-
-  fetch(config.public.CLOUDINARY_URL, {
-    method: 'POST',
-    body: formData,
-  })
-  .then(response => response.json())
-  .then((data) => {
-    if (data.secure_url !== '') {
-      console.log(data.secure_url);
-      images.value.push(data.secure_url);
-    }
-  })
-  .catch(err => console.error(err));
-}
-
 function onFileChange(e: any) {
   var files = e.target.files || e.dataTransfer.files;
   if (!files.length)
     return;
   
   for (let i = 0; i < files.length; i++) {
+    if(files[i].size > 1000000) {
+      isError.value = true;
+      message.value = "Image size should be less than 1MB";
+      return;
+    }
     const reader = new FileReader();
     let rawImg;
     reader.onloadend = () => {
