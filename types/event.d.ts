@@ -3,6 +3,7 @@ import type { Image } from "./images";
 import type { Location } from "./locations";
 import type { Reservation } from "./reservation";
 import type { Tag } from "./tags";
+import type { Ticket } from "./tickets";
 
 export type Event = {
   id: number;
@@ -14,12 +15,12 @@ export type Event = {
   title: string;
   description: string;
   thumbnail: string;
-  enterance_fee: number;
   location: Location;
   start_date: Date;
   end_date: Date;
   images: Image[];
   tags: string[];
+  tickets: Ticket[];
 };
 
 export type EventResponse = {
@@ -32,7 +33,6 @@ export type EventResponse = {
   title: string;
   description: string;
   thumbnail: string;
-  enterance_fee: number;
   location: Location;
   start_date: string;
   end_date: string;
@@ -40,6 +40,7 @@ export type EventResponse = {
   images?: Image[];
   reserved_events?: Reservation[];
   tags: Tag[];
+  tickets: Ticket[];
 }
 
 export type Events = {

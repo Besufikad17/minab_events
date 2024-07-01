@@ -208,14 +208,12 @@ defineComponent({
                     <div>
                         <p class="mb-8 font-normal text-gray-700 dark:text-gray-400">{{ event?.description }}</p>
                     </div>
-                    <p class="mb-4">Enterance fee:
-                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ event?.enterance_fee }} Birr</span>
-                    </p>
                     <p>Location:
                         <client-only>
                             <a target="_blank" :href="`/events/map?lat=${event.location.latitude}&lng=${event.location.longtiude}`">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ event?.location.full_location
+                                <span v-if="event?.location.city" class="text-sm text-gray-500 dark:text-gray-400">{{ event?.location.full_location
                                     }}</span>
+                                <span v-else class="text-sm text-gray-500 dark:text-gray-400">{{ event?.location.venue }}</span>
                             </a>
                         </client-only>
                     </p>

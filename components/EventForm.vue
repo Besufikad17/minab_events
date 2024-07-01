@@ -7,12 +7,14 @@ import CloseIcon from "./icons/Close.vue";
 import ErrorIcon from "./icons/Error.vue";
 import LoadingIcon from "./icons/Loading.vue";
 import LocationIcon from "./icons/Location.vue";
+import RemoveIcon from "./icons/Remove.vue";
 import SuccessIcon from "./icons/Success.vue";
 import { AddEventQuery, UpdateEventMutation } from "~/utils/constants/queries/events";
 import { jwtDecode } from "jwt-decode";
 import type { Tag } from "../types/tags";
 import type { Image } from "~/types/images";
 import type { Location, GeoApifyResponse } from "~/types/locations";
+import type { Ticket } from "~/types/tickets";
 
 const config = useRuntimeConfig();
 
@@ -44,12 +46,14 @@ const props = defineProps({
   city: String,
   venue: String,
   lat: Number,
-  lng: Number
+  lng: Number,
+  tickets: Array<Ticket>
 });
 
 const images = ref(props.images ? props.images : props.thumbnail ? [props.thumbnail] : [] as string[]);
 const thumbnail = ref(props.thumbnail || "");
 const tagsList = ref(props.tags ? props.tags?.split(",") : [] as string[]);
+const tickets = ref(props.tickets ? props.tickets : [] as Ticket[]);
 const searchResult = ref([] as Location[]);
 const isSelected = ref(props.city ? true : false);
 const selectedLocation = ref({
@@ -70,7 +74,9 @@ const { defineField, handleSubmit, errors } = useForm({
     tags: props.tags || '',
     city: props.city || '',
     venue: props.venue || '',
-    location: selectedLocation.value.venue || ''
+    location: selectedLocation.value.venue || '',
+    ticketType: '',
+    ticketDescription: ''
   },
   validationSchema: {
     title: required,
@@ -90,13 +96,14 @@ const [startDate, startDateProps] = defineField('startDate');
 const [endDate, endDateProps] = defineField('endDate');
 const [tags, tagsProps] = defineField('tags');
 const [location, locationProps] = defineField('location');
+const [ticketType, ticketTypeProps] = defineField('ticketType');
+const [ticketDescription, ticketDescriptionProps] = defineField('ticketDescription');
 
 const variables = {
   user_id: decoded.value.id,
   title: title.value,
   description: description.value,
   category_id: parseInt(category.value),
-  enterance_fee: enteranceFee.value,
   start_date: new Date(startDate.value),
   end_date: new Date(endDate.value),
   tags: tagsList.value,
@@ -104,7 +111,8 @@ const variables = {
   venue: selectedLocation.value.venue,
   lat: selectedLocation.value.latitude,
   lng: selectedLocation.value.longtiude,
-  images: images.value
+  images: images.value,
+  tickets: tickets.value
 };
 
 const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
@@ -118,15 +126,15 @@ const onSubmit = handleSubmit(async () => {
       title: title.value,
       description: description.value,
       category_id: parseInt(category.value),
-      enterance_fee: enteranceFee.value,
       start_date: new Date(startDate.value),
       end_date: new Date(endDate.value),
       tags: tagsList.value,
-      city: selectedLocation.value.city,
+      city: selectedLocation.value.city || "",
       venue: selectedLocation.value.venue,
       lat: selectedLocation.value.latitude,
       lng: selectedLocation.value.longtiude,
-      images: images.value
+      images: images.value,
+      tickets: tickets.value
     }).then(response => {
       console.log(response);
       message.value = "Event created successfully";
@@ -145,7 +153,6 @@ const onSubmit = handleSubmit(async () => {
       title: title.value,
       description: description.value,
       category_id: parseInt(category.value),
-      enterance_fee: enteranceFee.value,
       start_date: new Date(startDate.value),
       end_date: new Date(endDate.value),
       tags: [] as Tag[],
@@ -155,7 +162,8 @@ const onSubmit = handleSubmit(async () => {
       lat: selectedLocation.value.latitude,
       lng: selectedLocation.value.longtiude,
       thumbnail: thumbnail.value,
-      images: [] as Image[]
+      images: [] as Image[],
+      tickets: [] as Ticket[]
     };
 
     const { mutate: editEvent } = await useMutation(UpdateEventMutation, { variables });
@@ -165,7 +173,6 @@ const onSubmit = handleSubmit(async () => {
       title: title.value,
       description: description.value,
       category_id: parseInt(category.value),
-      enterance_fee: enteranceFee.value,
       start_date: new Date(startDate.value),
       end_date: new Date(endDate.value),
       tags: tagsList.value.map(tag => {
@@ -185,6 +192,14 @@ const onSubmit = handleSubmit(async () => {
           event_id: props.id,
           url: image
         } as Image
+      }),
+      tickets: tickets.value.map(ticket => {
+        return {
+          event_id: props.id,
+          ticket_type: ticket.ticket_type,
+          description: ticket.description,
+          price: ticket.price
+        } as Ticket
       })
     }).then(response => {
       console.log(response);
@@ -271,6 +286,21 @@ const searchLocation = async() => {
   }
 }
 
+function addTicket() {
+  tickets.value.push({
+    ticket_type: ticketType.value,
+    description: ticketDescription.value,
+    price: enteranceFee.value
+  } as Ticket);
+  ticketType.value = "";
+  ticketDescription.value = "";
+  enteranceFee.value = 0;
+}
+
+function removeTicket(type: string) {
+  tickets.value = tickets.value.filter((ticket) => ticket.ticket_type !== type);
+}
+
 defineComponent({
   components: {
     BirrIcon,
@@ -278,6 +308,7 @@ defineComponent({
     ErrorIcon,
     LoadingIcon,
     LocationIcon,
+    RemoveIcon,
     SuccessIcon
   }
 });
@@ -348,19 +379,6 @@ defineComponent({
             <UploadedImage v-for="image in images" :image="(image as string)" :onClose="removeImage" />
           </div>
         </div>
-        <div>
-          <label for="enteranceFee" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Enterance
-            fee</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-              <BirrIcon />
-            </div>
-            <input type="number" id="enteranceFee"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
-              placeholder="999 birr" min="0" max="1500" v-model="enteranceFee" v-bind="enteranceFeeProps" />
-          </div>
-          <span class="text-sm text-red-600">{{ errors.enteranceFee }}</span>
-        </div>
         <div class="flex flex-row w-full">
           <div class="w-full mr-8">
             <label for="startDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Start
@@ -377,7 +395,6 @@ defineComponent({
               placeholder="Select date">
           </div>
         </div>
-        <!-- FIXME use Google maps API -->
         <div>
           <label for="location" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Location</label>
           <div class="flex flex-row w-full">
@@ -427,16 +444,44 @@ defineComponent({
             <button type="button"
               class="inline-flex items-center p-1 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300"
               data-dismiss-target="#badge-dismiss-default" aria-label="Remove" @click="(() => removeTag(tag))">
-              <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-              </svg>
+              <RemoveIcon />
               <span class="sr-only">Remove badge</span>
             </button>
           </span>
         </div>
-        <!-- TODO Add ticket -->
+        <h6>Tickets</h6>
+        <div>
+            <label for="ticketType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+            <input type="text" name="ticketType" id="ticketType" v-model="ticketType" v-bind="ticketTypeProps" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Ticket type" />
+            <span class="text-sm text-red-600">{{ errors.ticketType }}</span>
+        </div>
+        <div>
+            <label for="ticketDescription" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+            <textarea id="ticketDescription" v-model="ticketDescription" v-bind="ticketDescriptionProps" rows="4"
+                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
+                placeholder="Description"></textarea>
+            <span class="text-sm text-red-600">{{ errors.ticketDescription }}</span>
+        </div>
+        <label for="enteranceFee" class="block text-sm font-medium text-gray-900 dark:text-white">Price</label>
+        <div class="flex flex-row w-full">
+          <div class="mr-4 w-full justify-center">
+            <div class="relative">
+              <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                <BirrIcon />
+              </div>
+              <input type="number" id="enteranceFee"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500"
+                placeholder="999 birr" min="0" max="1500" v-model="enteranceFee" v-bind="enteranceFeeProps" />
+            </div>
+            <span class="text-sm text-red-600">{{ errors.enteranceFee }}</span>
+          </div>
+          <div>
+            <button type="button" class="w-36 text-purple-800 bg-gray border border-purple-800  focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" @click="addTicket">Add</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 mt-5 gap-5">
+          <TicketCard v-for="(ticket, i) in tickets" :key="i" :name="ticket.ticket_type" :description="ticket.description" :price="ticket.price" :remove="removeTicket" />
+        </div>
         <button v-if="isLoading" type="submit"
           class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" disabled>
           <LoadingIcon />

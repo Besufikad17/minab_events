@@ -20,10 +20,6 @@ export const searchEventQuery = gql`
                         _ilike: $category
                     }
                 },
-                enterance_fee: {
-                    _gte: $min_enterance_fee,
-                    _lte: $max_enterance_fee
-                },
                 location:{
                     city:{
                         _ilike: $city
@@ -31,6 +27,10 @@ export const searchEventQuery = gql`
                 },
                 title: {
                     _ilike: $text
+                },
+                tickets: {
+                    _gte: $min_enterance_fee,
+                    _lte: $max_enterance_fee
                 }
             },
             offset: $skip, 
@@ -43,7 +43,6 @@ export const searchEventQuery = gql`
                 name
             }
             thumbnail
-            enterance_fee
             start_date
             end_date
             location {
@@ -80,10 +79,6 @@ export const searchEventQueryWithTags = gql`
                         _ilike: $category
                     }
                 },
-                enterance_fee: {
-                    _gte: $min_enterance_fee,
-                    _lte: $max_enterance_fee
-                },
                 location:{
                     city:{
                         _ilike: $city
@@ -96,6 +91,10 @@ export const searchEventQueryWithTags = gql`
                 },
                 title: {
                     _ilike: $text
+                },
+                tickets: {
+                    _gte: $min_enterance_fee,
+                    _lte: $max_enterance_fee
                 }
             },
             offset: $skip, 
@@ -108,7 +107,6 @@ export const searchEventQueryWithTags = gql`
                 name
             }
             thumbnail
-            enterance_fee
             start_date
             end_date
             location {
@@ -133,7 +131,7 @@ export const AddEventQuery = gql`
         $lat: float8!,
         $lng: float8!,
         $images: [String!]!,   
-        $enterance_fee: float8!,   
+        $tickets: [tickets_input!]!,
         $start_date: date!,   
         $end_date: date!,
         $tags: [String!]!
@@ -148,7 +146,7 @@ export const AddEventQuery = gql`
             lat: $lat,
             lng: $lng,
             images: $images,
-            enterance_fee: $enterance_fee,
+            tickets: $tickets,
             start_date: $start_date,
             end_date: $end_date,
             tags: $tags
@@ -181,15 +179,11 @@ export const GetMyEventsQuery = gql`
                 name
             }
             thumbnail
-            enterance_fee
             start_date
             end_date
             location {
                 city
                 venue
-            }
-            tags {
-                name
             }
         }
     }
@@ -210,7 +204,6 @@ export const GetEventByIdQuery = gql`
             images {
                 url
             }
-            enterance_fee
             start_date
             end_date
             location {
@@ -230,6 +223,11 @@ export const GetEventByIdQuery = gql`
             reserved_events {
                 user_id
             }
+            tickets {
+                ticket_type
+                description
+                price
+            }
         }
     }
 `;
@@ -247,10 +245,10 @@ export const UpdateEventMutation = gql`
         $lng: float8!,
         $thumbnail: String!,
         $images: [AddImagesImagesInsertInput!]!, 
-        $enterance_fee: float8!, 
         $start_date: date!, 
         $end_date: date!,
-        $tags: [tags_insert_input!]!
+        $tags: [tags_insert_input!]!,
+        $tickets: [tickets_insert_input!]!
     ) {
         update_locations(
             where: {
@@ -281,7 +279,6 @@ export const UpdateEventMutation = gql`
                 description: $description,
                 category_id: $category_id,
                 thumbnail: $thumbnail,
-                enterance_fee: $enterance_fee,
                 start_date: $start_date,
                 end_date: $end_date,
             }
@@ -292,7 +289,6 @@ export const UpdateEventMutation = gql`
                 thumbnail
                 start_date
                 end_date
-                enterance_fee
             }
         }
         delete_tags(
@@ -320,6 +316,24 @@ export const UpdateEventMutation = gql`
         }
         AddImages(images: $images) {
             affected_rows
+        }
+        delete_tickets(
+            where: {
+                event_id: {
+                    _eq: $id
+                }
+            }
+        ) {
+            returning {
+                id
+            }
+        }
+        insert_tickets(
+            objects: $tickets
+        ) {
+            returning {
+                id
+            }
         }
     }
 `;
