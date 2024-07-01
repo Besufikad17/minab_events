@@ -38,7 +38,7 @@ export type EventResponse = {
   end_date: string;
   bookmarks?: Bookmark[];
   images?: Image[];
-  reserved_events?: Reservation[];
+  reservations?: Reservation[];
   tags: Tag[];
   tickets: Ticket[];
 }

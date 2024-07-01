@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { GetEventByIdQuery, DeleteEventMutation } from "../../utils/constants/queries/events";
 import { BookmarkMutation, UnBookmarkMutation } from "../../utils/constants/queries/bookmarks";
-import { ReserveEventMutation } from "../../utils/constants/queries/reservations";
 import { getDateTime, isBookmarked as checkIsBookmarked, isReserved as checkIsReserved } from "../../utils/helpers/data";
 import { jwtDecode } from "jwt-decode";
 import { initCarousels } from "flowbite";
@@ -22,7 +21,7 @@ const message = ref("");
 const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
 const decoded = ref({} as any);
-const index = ref(0);
+const reservedTicketId = ref(0);
 
 const token = useCookie('token');
 if (token.value && token.value !== null) {
@@ -41,7 +40,10 @@ if (data.value) {
     event.value = data.value.events[0];
     fullDate.value = getDateTime(new Date(event.value.start_date), new Date(event.value.end_date));
     isBookmarked.value = checkIsBookmarked(decoded.value.id, event.value?.bookmarks!);
-    isReserved.value = checkIsReserved(decoded.value.id, event.value?.reserved_events!);
+    isReserved.value = checkIsReserved(decoded.value.id, event.value?.reservations!);
+    if(isReserved.value) {
+        reservedTicketId.value = event.value?.reservations!.find((reservation) => reservation.user_id === decoded.value.id)?.ticket_id!;
+    }
 } else {
     console.log('Event not found'!!);
 }
@@ -118,29 +120,7 @@ const unBookmarkEvent = () => {
     });
 }
 
-const reserveEvent = () => {
-    const variables = {
-        event_id: event.value?.id,
-        user_id: decoded.value.id
-    };    
 
-    const { mutate: reserveEventMutation } = useMutation(ReserveEventMutation, { variables });
-    reserveEventMutation({
-        event_id: event.value?.id,
-        user_id: decoded.value.id
-    }).then((result) => {
-        message.value = "Event reserved successfully";
-        setTimeout(() => {
-            message.value = "";
-        }, 5000);
-        window.location.reload();
-    }).catch((error) => {
-        console.log(error);
-        isError.value = true;
-        message.value = "Failed to reserve event";
-        console.log(error);
-    });
-}
 
 function toggle() {
   message.value = "";
@@ -231,14 +211,6 @@ defineComponent({
                             class="w-sm text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
                     </div>
                     <div v-else class="flex flex-row mt-4">
-                        <button v-if="isReserved"  @click="reserveEvent"
-                            class="text-white bg-purple-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600" disabled>
-                            Reserved
-                        </button>
-                        <button v-else  @click="reserveEvent"
-                            class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
-                            Attend
-                        </button>
                         <button v-if="isBookmarked" @click="unBookmarkEvent"
                             class="text-purple-700 border border-purple-700 inline-flex focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900">
                             <BookmarkedIcon /> Bookmarked
@@ -248,6 +220,12 @@ defineComponent({
                             <BookmarkIcon /> Bookmark
                         </button>
                     </div>
+                </div>
+            </div>
+            <div class="flex flex-col mt-10 p-8">
+                <h5 class="mb-4 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Tickets</h5>
+                <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-32 mx-auto">
+                    <TicketCard v-for="(ticket, index) in event.tickets" :key="index" :is-reserved="isReserved" :is-reserved-ticket="reservedTicketId === ticket.id" :event_id="event.id" :user_id="decoded.id" :name="ticket.ticket_type" :description="ticket.description" :price="ticket.price" :remove="() => {}" />
                 </div>
             </div>
             <div class="flex flex-col mt-10 p-8">

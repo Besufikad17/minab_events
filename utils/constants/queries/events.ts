@@ -29,8 +29,10 @@ export const searchEventQuery = gql`
                     _ilike: $text
                 },
                 tickets: {
-                    _gte: $min_enterance_fee,
-                    _lte: $max_enterance_fee
+                    price: {
+                        _gte: $min_enterance_fee,
+                        _lte: $max_enterance_fee
+                    }
                 }
             },
             offset: $skip, 
@@ -220,8 +222,10 @@ export const GetEventByIdQuery = gql`
             bookmarks {
                 user_id
             }
-            reserved_events {
+            reservations {
                 user_id
+                ticket_id
+                status
             }
             tickets {
                 ticket_type

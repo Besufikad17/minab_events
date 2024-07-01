@@ -31,7 +31,7 @@ export default {
       <img class="rounded-t-lg min-w-72" :src="imageUrl" alt="" />
     </a>
     <div class="p-5">
-      <div class="flex flex-row">
+      <div class="flex flex-row space-x-4">
         <p class="text-sm text-gray-500 dark:text-gray-400">{{ location }}</p>
         <span id="badge-dismiss-default"
           class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
