@@ -21,3 +21,11 @@ export type Reservations = {
     }
 };
 
+type ReserveEvent = {
+  id: number;
+  checkoutUrl: string;
+}
+
+export type ReserveEventResponse = {
+  ReserveEvent: ReserveEvent;
+}

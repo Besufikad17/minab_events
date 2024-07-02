@@ -222,15 +222,16 @@ export const GetEventByIdQuery = gql`
             bookmarks {
                 user_id
             }
+            tickets {
+                id
+                ticket_type
+                description
+                price
+            }
             reservations {
                 user_id
                 ticket_id
                 status
-            }
-            tickets {
-                ticket_type
-                description
-                price
             }
         }
     }

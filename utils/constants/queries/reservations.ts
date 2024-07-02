@@ -1,17 +1,18 @@
 export const ReserveEventMutation = gql`
-    mutation ReserveEvent(
+    mutation ReserveEventAction(
         $user_id: Int!,
-        $event_id: Int!
+        $event_id: Int!,
+        $ticket_id: Int!,
+        $status: String!,
     ) {
-        insert_reserved_events(
-            objects: {
-                user_id: $user_id,
-                event_id: $event_id
-            }
+        ReserveEvent(
+            user_id: $user_id,
+            event_id: $event_id,
+            ticket_id: $ticket_id,
+            status: $status
         ) {
-            returning {
-                id
-            }
+            id
+            checkoutUrl
         }
     }
 `;

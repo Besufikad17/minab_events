@@ -22,6 +22,7 @@ const event = ref<EventResponse | undefined>(undefined);
 const fullDate = ref("");
 const decoded = ref({} as any);
 const reservedTicketId = ref(0);
+const reservationStatus = ref("");
 
 const token = useCookie('token');
 if (token.value && token.value !== null) {
@@ -43,6 +44,7 @@ if (data.value) {
     isReserved.value = checkIsReserved(decoded.value.id, event.value?.reservations!);
     if(isReserved.value) {
         reservedTicketId.value = event.value?.reservations!.find((reservation) => reservation.user_id === decoded.value.id)?.ticket_id!;
+        reservationStatus.value = event.value?.reservations!.find((reservation) => reservation.user_id === decoded.value.id)?.status!;
     }
 } else {
     console.log('Event not found'!!);
@@ -225,7 +227,7 @@ defineComponent({
             <div class="flex flex-col mt-10 p-8">
                 <h5 class="mb-4 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Tickets</h5>
                 <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-32 mx-auto">
-                    <TicketCard v-for="(ticket, index) in event.tickets" :key="index" :is-reserved="isReserved" :is-reserved-ticket="reservedTicketId === ticket.id" :event_id="event.id" :user_id="decoded.id" :name="ticket.ticket_type" :description="ticket.description" :price="ticket.price" :remove="() => {}" />
+                    <TicketCard v-for="(ticket, index) in event.tickets" :key="index" :is-reservable="decoded.id !== event.user_id" :is-reserved="isReserved" :is-reserved-ticket="reservedTicketId === ticket.id" :reservation-status="reservationStatus" :event_id="event.id" :user_id="decoded.id" :ticket_id="ticket.id" :name="ticket.ticket_type" :description="ticket.description" :price="ticket.price" :remove="() => {}" />
                 </div>
             </div>
             <div class="flex flex-col mt-10 p-8">

@@ -1,14 +1,22 @@
 <script setup lang="ts">
   import { ReserveEventMutation } from "~/utils/constants/queries/reservations";
+  import type { ReserveEventResponse } from "../types/reservation";
+  import CloseIcon from "~/components/icons/Close.vue";
+  import ErrorIcon from "~/components/icons/Error.vue";
   import LoadingIcon from "./icons/Loading.vue";
   import RemoveIcon from "./icons/Remove.vue";
-
+  import SuccessIcon from "~/components/icons/Success.vue";
+  
   const isLoading = ref(false);
   const isError = ref(false);
   const message = ref("");
 
   const props = defineProps({
-    cardType: String,
+      cardType: String,
+      isReservable: {
+        type: Boolean,
+        default: false
+      },
       isReserved: {
         type: Boolean,
         default: false
@@ -16,6 +24,10 @@
       isReservedTicket: {
         type: Boolean,
         default: false
+      },
+      reservationStatus: {
+        type: String,
+        default: ""
       },
       event_id: {
         type: Number,
@@ -37,27 +49,41 @@
   );
     
   defineComponent({
+    CloseIcon,
+    ErrorIcon,
     LoadingIcon,
-    RemoveIcon
+    RemoveIcon,
+    SuccessIcon
   });
 
   const reserveEvent = () => {
     const variables = {
         event_id: props.event_id!,
-        user_id: props.user_id!
+        user_id: props.user_id!,
+        ticket_id: props.ticket_id!,
+        status: ""
     };    
 
-    const { mutate: reserveEventMutation } = useMutation(ReserveEventMutation, { variables });
+    const { mutate: reserveEventMutation } = useMutation<ReserveEventResponse>(ReserveEventMutation, { variables });
     isLoading.value = true;
     reserveEventMutation({
         event_id: props.event_id!,
-        user_id: props.user_id!
-    }).then((result) => {
+        user_id: props.user_id!,
+        ticket_id: props.ticket_id!,
+        status: props.price === 0? "completed" : "pending"
+    }).then(async(result) => {
         message.value = "Event reserved successfully";
         setTimeout(() => {
             message.value = "";
         }, 5000);
-        window.location.reload();
+        console.log(result?.data?.ReserveEvent.checkoutUrl);
+        if(result?.data?.ReserveEvent.checkoutUrl && props.price !== 0) {
+          await navigateTo(result?.data?.ReserveEvent.checkoutUrl, {
+            external: true
+          });
+        }else {
+          window.location.reload();
+        }
     }).catch((error) => {
         console.log(error);
         isError.value = true;
@@ -95,18 +121,21 @@
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ description }}</p>
         <span v-if="price === 0" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-green-800 bg-green-100 rounded dark:bg-green-900 dark:text-green-300">FREE</span>
         <p v-else class="text-sm text-gray-500 dark:text-gray-400">{{ price }} ETB</p>
-        <div v-if="isReserved">
-          <button v-if="isReservedTicket"  @click="reserveEvent" class="text-white bg-purple-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600" disabled>
-            Reserved
-          </button>
-        </div>
-        <div v-else>
-          <button v-if="isLoading" type="submit" class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" disabled>
-            <LoadingIcon />
-          </button>
-          <button v-else @click="reserveEvent" class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
-            Attend
-          </button>
+        <div v-if="isReservable" class="mt-4">
+          <div v-if="isReserved">
+            <button v-if="isReservedTicket && reservationStatus === 'completed'" class="text-white bg-purple-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600" disabled>
+              Reserved
+            </button>
+            <span v-else-if="isReservedTicket && reservationStatus === 'pending'" class="italic mb-3 font-small text-purple-700 dark:text-gray-400">Reservation pending</span>
+          </div>
+          <div v-else>
+            <button v-if="isLoading" type="submit" class="w-full text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800" disabled>
+              <LoadingIcon />
+            </button>
+            <button v-else @click="reserveEvent" class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 mr-4 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800">
+              Reserve
+            </button>
+          </div>
         </div>
       </div>
       <button v-if="cardType === 'create'" type="button" class="inline-flex items-center p-2 ms-2 text-sm text-purple-400 bg-transparent rounded-sm hover:bg-purple-200 hover:text-purple-900 dark:hover:bg-purple-800 dark:hover:text-purple-300" data-dismiss-target="#badge-dismiss-default" aria-label="Remove" @click="(() => remove!(name))">
