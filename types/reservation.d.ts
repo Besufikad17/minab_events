@@ -13,8 +13,8 @@ export type Reservation = {
 export type ReservedEvents = BookmarkedEvents;
 
 export type Reservations = {
-    reserved_events: ReservedEvents[];
-    reserved_events_aggregate: {
+    reservations: ReservedEvents[];
+    reservations_aggregate: {
       aggregate: {
         count: number;
       }

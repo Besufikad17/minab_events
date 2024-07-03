@@ -7,3 +7,7 @@ export type Ticket = {
     created_at?: Date;
     updated_at?: Date;
 }
+
+export type TicketResponse = {
+    tickets: Ticket[];
+}

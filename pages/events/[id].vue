@@ -35,7 +35,6 @@ if (token.value && token.value !== null) {
 isLoading.value = true;
 const variables = { id: route.params.id };
 const { data } = await useAsyncQuery<Events>(GetEventByIdQuery, variables);
-console.log(data);
 if (data.value) {
     console.log(data.value.events[0]);
     event.value = data.value.events[0];

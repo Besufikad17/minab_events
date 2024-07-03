@@ -18,17 +18,17 @@ export const ReserveEventMutation = gql`
 `;
 
 export const GetReservedEventsQuery = gql`
-    query GetReservedEvent(
+    query GetReservedEvents(
         $user_id: Int!,
         $skip: Int = 0,
         $take: Int = 6
     ) {
-        reserved_events_aggregate {
+        reservations_aggregate {
             aggregate {
                 count
             }
         }
-        reserved_events(
+        reservations(
             where: {
                 user_id: {
                     _eq: $user_id
@@ -51,6 +51,29 @@ export const GetReservedEventsQuery = gql`
                 start_date
                 end_date
             }
+        }
+    }
+`;
+
+export const UpdateReservation = gql`
+    mutation UpdateReservation(
+        $event_id: Int!,
+        $user_id: Int!
+    ) {
+        update_reservations(
+            where: { 
+                event_id: {
+                    _eq: $event_id
+                },
+                user_id: {
+                    _eq: $user_id
+                }
+            },
+            _set: {
+                status: "completed"
+            }
+        ) {
+            affected_rows
         }
     }
 `;

@@ -28,9 +28,9 @@
   };
 
   const { data } = await useAsyncQuery<Reservations>(GetReservedEventsQuery, variables);
-  if(data.value?.reserved_events) {
-    events.value = data.value.reserved_events;
-    totalEvents.value = data.value.reserved_events_aggregate.aggregate.count;
+  if(data.value?.reservations) {
+    events.value = data.value.reservations;
+    totalEvents.value = data.value.reservations_aggregate.aggregate.count;
   }else {
     console.log('No events found');
   }
@@ -53,7 +53,6 @@
     </div>
     <div class="flex flex-col items-center">
         <div class="inline-flex mt-10 xs:mt-0">
-          <!-- FIXME change the skip query to page -->
           <a v-if="skip >= 6" :href="`/events/reserved?skip=${skip > 0 ? skip - 6 : 0}`">
             <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Prev</span>
           </a>

@@ -29,6 +29,7 @@
   };
 
   const { data } = await useAsyncQuery<Events>(GetMyEventsQuery, variables);
+  console.log(data.value);
   if(data.value?.events) {
     events.value = data.value.events;
     totalEvents.value = data.value.events_aggregate.aggregate.count;

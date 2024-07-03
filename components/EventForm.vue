@@ -207,7 +207,8 @@ const onSubmit = handleSubmit(async () => {
       setTimeout(() => {
         message.value = "";
       }, 5000);
-      navigateTo(`/events/${props.id}`);
+      window.location.reload();
+      // navigateTo(`/events/${props.id}`);
     }).catch(err => {
       isError.value = true;
       message.value = "Failed to update event";
@@ -402,7 +403,7 @@ defineComponent({
               <input type="text" name="location" id="location" v-model="location" v-bind="locationProps"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               placeholder="Location" @input="searchLocation"  />
-              <div v-if="location.length > 0 && !isSelected" class="z-10 overflow-y-scroll w-60 h-40 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
+              <div v-if="location.length > 0 && !isSelected && location !== selectedLocation.venue" class="z-10 overflow-y-scroll w-60 h-40 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700">
                 <ul class="list-none">
                   <li v-for="(location, i) in searchResult" className=" cursor-pointer border-gray-300 p-2 px-4 text-gray-700 hover:bg-purple-400" @click="() => selectLocation(i)">
                     {{ location.venue }}
