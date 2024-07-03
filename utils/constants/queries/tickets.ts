@@ -11,6 +11,7 @@ export const GetTicketById = gql`
         ) {
             price
             event_id
+            ticket_type
         }
     }
 `;
