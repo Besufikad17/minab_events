@@ -47,13 +47,19 @@
           :startDate="new Date(event.event.start_date)" :endDate="new Date(event.event.end_date)" :category="event.event.category.name">{{ event }}</EventCard>
       </div>
       <div v-else class="flex flex-col items-center text-center w-full">
-        <img src="../../assets/images/empty.jpg" width="300" height="300" />
+        <client-only>
+          <Vue3Lottie
+            animationLink="https://lottie.host/aa6509bb-c839-4558-8130-5d2172f45a73/IvRbW89MAD.json"
+            :height="200"
+            :width="200"
+            :loop="false"
+          />
+        </client-only>
         <p class="text-2xl">No events :(</p><br />
       </div>
     </div>
     <div class="flex flex-col items-center">
         <div class="inline-flex mt-10 xs:mt-0">
-          <!-- FIXME change the skip query to page -->
           <a v-if="skip >= 6" :href="`/events/bookmarks?skip=${skip > 0 ? skip - 6 : 0}`">
             <span id="badge-dismiss-default" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 underline rounded dark:bg-purple-900 dark:text-purple-300">Prev</span>
           </a>

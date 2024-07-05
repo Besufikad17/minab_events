@@ -1,12 +1,11 @@
 export const searchEventQuery = gql`
-    query SearchEvent(
+   query SearchEvent(
         $skip: Int = 0, 
         $take: Int = 6,
         $text: String = "%%",
         $min_enterance_fee: float8 = 0,
         $max_enterance_fee: float8 = 0,
-        $category: String = "%%",
-        $city: String = "%%"
+        $category: String = "%%"
     ) {
         events_aggregate {
             aggregate {
@@ -15,18 +14,34 @@ export const searchEventQuery = gql`
         }
         events(
             where: {
+                _or: [
+                {
+                    location:{
+                    city:{
+                        _ilike: $text
+                    },
+                    venue: {
+                        _ilike: $text
+                    }
+                    },
+                },
+                {
+                    title: {
+                    _ilike: $text
+                    },
+                },
+                {
+                    tags: {
+                    name: {
+                        _ilike: $text
+                    }
+                    },
+                }
+                ],
                 category:{
                     name: {
                         _ilike: $category
                     }
-                },
-                location:{
-                    city:{
-                        _ilike: $city
-                    }
-                },
-                title: {
-                    _ilike: $text
                 },
                 tickets: {
                     price: {
@@ -40,7 +55,6 @@ export const searchEventQuery = gql`
         ) {
             id
             title
-            user_id
             category {
                 name
             }
@@ -50,73 +64,6 @@ export const searchEventQuery = gql`
             location {
                 city
                 venue
-            }
-            tags {
-                name
-            }
-        }
-    }
-`;
-
-export const searchEventQueryWithTags = gql`
-    query SearchEvent(
-        $skip: Int = 0, 
-        $take: Int = 6,
-        $text: String = "%%",
-        $min_enterance_fee: float8 = 0,
-        $max_enterance_fee: float8 = 0,
-        $category: String = "%%",
-        $city: String = "%%",
-        $tags: [String!] = []
-    ) {
-        events_aggregate {
-            aggregate {
-                count
-            }
-        }
-        events(
-            where: {
-                category:{
-                    name: {
-                        _ilike: $category
-                    }
-                },
-                location:{
-                    city:{
-                        _ilike: $city
-                    }
-                },
-                tags: {
-                    name: {
-                        _in: $tags
-                    }
-                },
-                title: {
-                    _ilike: $text
-                },
-                tickets: {
-                    _gte: $min_enterance_fee,
-                    _lte: $max_enterance_fee
-                }
-            },
-            offset: $skip, 
-            limit: $take
-        ) {
-            id
-            title
-            user_id
-            category {
-                name
-            }
-            thumbnail
-            start_date
-            end_date
-            location {
-                city
-                venue
-            }
-            tags {
-                name
             }
         }
     }

@@ -9,8 +9,6 @@ export default {
     description: String,
     imageUrl: String,
     location: String,
-    userId: Number,
-    tags: Array<String>,
     category: String,
     startDate: Date,
     endDate: Date,

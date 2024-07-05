@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ReserveEventMutation } from "~/utils/constants/queries/reservations";
+  import { ReserveEventMutation, UpdateReservation } from "~/utils/constants/queries/reservations";
   import type { ReserveEventResponse } from "../types/reservation";
   import CloseIcon from "~/components/icons/Close.vue";
   import ErrorIcon from "~/components/icons/Error.vue";
@@ -61,34 +61,35 @@
         event_id: props.event_id!,
         user_id: props.user_id!,
         ticket_id: props.ticket_id!,
-        status: ""
+        status: "pending"
     };    
 
     const { mutate: reserveEventMutation } = useMutation<ReserveEventResponse>(ReserveEventMutation, { variables });
     isLoading.value = true;
-    reserveEventMutation({
-        event_id: props.event_id!,
-        user_id: props.user_id!,
-        ticket_id: props.ticket_id!,
-        status: props.price === 0? "completed" : "pending"
-    }).then(async(result) => {
-        message.value = "Event reserved successfully";
-        setTimeout(() => {
-            message.value = "";
-        }, 5000);
-        console.log(result?.data?.ReserveEvent.checkoutUrl);
-        if(result?.data?.ReserveEvent.checkoutUrl && props.price !== 0) {
-          await navigateTo(result?.data?.ReserveEvent.checkoutUrl, {
-            external: true
-          });
-        }else {
+    reserveEventMutation().then(async(result) => {
+      if(result?.data?.ReserveEvent.checkoutUrl && props.price !== 0) {
+        await navigateTo(result?.data?.ReserveEvent.checkoutUrl, {
+          external: true
+        });
+      }else {
+        const variables = { user_id: props.user_id!, event_id: props.event_id!};
+        const { mutate: updateReservation } = await useMutation(UpdateReservation, { variables });
+        updateReservation().then(result => {
+          message.value = "Event reserved successfully";
+          setTimeout(() => {
+              message.value = "";
+          }, 5000);
           window.location.reload();
-        }
+        }).catch(error => {
+          console.log(error);
+          isError.value = true;
+          message.value = "Failed to reserve event";
+        });
+      }
     }).catch((error) => {
         console.log(error);
         isError.value = true;
         message.value = "Failed to reserve event";
-        console.log(error);
     });
     isLoading.value = false;
   }

@@ -10,7 +10,6 @@
     import SuccessIcon from "~/components/icons/Success.vue";
     import CloseIcon from "~/components/icons/Close.vue";
    
-    const router = useRouter()
     const route = useRoute();
     const isLoading = ref(false);
     const isError = ref(false);
