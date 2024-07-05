@@ -109,7 +109,7 @@ const variables = {
   start_date: new Date(startDate.value),
   end_date: new Date(endDate.value),
   tags: tagsList.value,
-  city: selectedLocation.value.city,
+  city: selectedLocation.value.city || "",
   venue: selectedLocation.value.venue,
   lat: selectedLocation.value.latitude,
   lng: selectedLocation.value.longtiude,
@@ -123,8 +123,21 @@ const onSubmit = handleSubmit(async () => {
   console.log(images.value);
   isLoading.value = true;
   if(props.type === "create") {
-    addEvent().then(response => {
-      console.log(response);
+    addEvent({
+      user_id: decoded.value.id,
+      title: title.value,
+      description: description.value,
+      category_id: parseInt(category.value),
+      start_date: new Date(startDate.value),
+      end_date: new Date(endDate.value),
+      tags: tagsList.value,
+      city: selectedLocation.value.city || "",
+      venue: selectedLocation.value.venue,
+      lat: selectedLocation.value.latitude,
+      lng: selectedLocation.value.longtiude,
+      images: images.value,
+      tickets: tickets.value
+    }).then(response => {
       message.value = "Event created successfully";
       setTimeout(() => {
         message.value = "";

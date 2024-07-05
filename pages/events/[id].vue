@@ -199,7 +199,7 @@ defineComponent({
                         </client-only>
                     </p>
                     <div v-if="event.tags.length > 0" class="grid-cols-4 gap-4 mt-4">
-                        Tags: <a href="#"><span id="badge-dismiss-default" v-for="tag in event?.tags" :key="tag.id"
+                        Tags: <a v-for="tag in event?.tags" :key="tag.id" :href="`/events?text=${tag.name?.slice(1, tag.name?.length)}`"><span id="badge-dismiss-default" 
                                 class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-purple-800 bg-purple-100 rounded dark:bg-purple-900 dark:text-purple-300">{{
                                     tag.name }}</span></a>
                     </div>
