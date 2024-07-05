@@ -35,7 +35,6 @@ const variables = {
 const { mutate: login } = useMutation(loginMutation, { variables });
 
 const onSubmit = handleSubmit(async values => {
-  console.log(values);
   isLoading.value = true;
   login({
     login_text: email.value,

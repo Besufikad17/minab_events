@@ -49,7 +49,6 @@ const { mutate: register } = useMutation(registerMutation, {
 
 const onSubmit = handleSubmit(values => {
   if (password.value === confirmPassword.value) {
-    console.log(values);
     isLoading.value = true;
     register({
       first_name: firstName.value,

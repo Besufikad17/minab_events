@@ -41,7 +41,6 @@
     };
 
     const onSubmit = handleSubmit(async values => {
-        console.log(values);
         isLoading.value = true;
         const { mutate: sendComment } = await useMutation(SendCommentMutation, { variables });
         sendComment({
@@ -49,7 +48,6 @@
           email: email.value,
           message: message.value,
         }).then(res => {
-          console.log(response);
           message.value = "Comment sent successfully";
           setTimeout(() => {
             message.value = "";

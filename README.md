@@ -1,75 +1,76 @@
-# Nuxt 3 Minimal Starter
+# Minab Events
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+- Simple event management system.
+
+## Technologies used
+
+- [NuxtJs](https://nuxt.com/) - Frontend framework
+- [Flowbite](https://flowbite.com/) - UI library powered by tailwindcss
+- [vue-validate](https://vee-validate.logaretm.com/v3/) - Form validation
+- [@nuxtjs/leaflet](https://leaflet.nuxtjs.org/) - Map integration
+- [@nuxtjs/apollo](https://apollo.nuxtjs.org/) - Apollo client
 
 ## Setup
 
-Make sure to install the dependencies:
+- To setup the backend follow the steps listed in [this](https://github.com/Besufikad17/minab_events_server) repo setup section.
 
-```bash
-# npm
-npm install
+1. Clonning the repo
+   
+   ```bash
+    git clone https://github.com/Besufikad17/minab_events.git
+   ```
 
-# pnpm
-pnpm install
+2. Installing npm packages
+   
+   ```bash
+    cd minab_events && npm install
+    ```
+3. Connecting to backend
+      
+   ```bash
+   touch .env
+   ```
+   ```.env
+   GQL_HOST=""
+   PLACE_API_URL=""
+   PLACE_API_KEY=""
+   ```
+4. Running
+    ```bash 
+    npm run dev
+    ```
 
-# yarn
-yarn install
+## Preview
 
-# bun
-bun install
-```
+**Auth pages**
 
-## Development Server
+<img src="assets/images/login-page.png" />
+<img src="assets/images/signup-page.png" />
 
-Start the development server on `http://localhost:3000`:
+**Landing page**
 
-```bash
-# npm
-npm run dev
+<img src="assets/images/landing-page.png" />
 
-# pnpm
-pnpm run dev
+**Browse events page**
 
-# yarn
-yarn dev
+<img src="assets/images/browse-events.png" />
 
-# bun
-bun run dev
-```
+**Event details**
 
-## Production
+<img src="assets/images/my-events-detail-page.png" />
 
-Build the application for production:
+<img src="assets/images/reserved-event.png" />
 
-```bash
-# npm
-npm run build
+<img src="assets/images/unreserved-event.png" />
 
-# pnpm
-pnpm run build
+**Bookmarks and Reserved events page**
 
-# yarn
-yarn build
+<img src="assets/images/bookmarks-page.png" />
 
-# bun
-bun run build
-```
+<img src="assets/images/reserved-events-page.png" />
 
-Locally preview production build:
+**Create and Edit event page**
 
-```bash
-# npm
-npm run preview
+<img src="assets/images/create-event-page.png" />
 
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+<img src="assets/images/update-event-page.png" />

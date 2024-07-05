@@ -120,7 +120,6 @@ const variables = {
 const { mutate: addEvent } = await useMutation(AddEventQuery, { variables });
 
 const onSubmit = handleSubmit(async () => {
-  console.log(images.value);
   isLoading.value = true;
   if(props.type === "create") {
     addEvent({
@@ -203,7 +202,6 @@ const onSubmit = handleSubmit(async () => {
         } as Ticket
       })
     }).then(response => {
-      console.log(response);
       message.value = "Event updated successfully";
       setTimeout(() => {
         message.value = "";
@@ -240,7 +238,6 @@ function onFileChange(e: any) {
 }
 
 function removeImage(image: string) {
-  console.log(image);
   images.value = images.value.filter((img) => img !== image);
 }
 
@@ -265,7 +262,6 @@ const selectLocation = (index: number) => {
   selectedLocation.value = searchResult.value[index];
   location.value = searchResult.value[index].venue;
   isSelected.value = true;
-  console.log(selectedLocation.value);
 }
 
 const searchLocation = async() => {

@@ -21,10 +21,8 @@
     isLoading.value = true;
     const variables = { id: route.query.id };
     const { data } = await useAsyncQuery<Events>(GetEventByIdQuery, variables);
-    console.log(data);
     if (data.value) {
         event.value = data.value.events[0];
-        console.log(event.value);
         if(event.value) {
           const tags = event.value.tags.map((tag) => tag.name);
           tagsList.value = tags.join();

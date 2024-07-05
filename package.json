@@ -19,9 +19,7 @@
     "vee-validate": "^4.12.7",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
-    "vue3-google-map": "^0.20.0",
-    "vue3-lottie": "^3.3.0",
-    "yup": "^1.4.0"
+    "vue3-lottie": "^3.3.0"
   },
   "devDependencies": {
     "@nuxtjs/apollo": "^5.0.0-alpha.14",

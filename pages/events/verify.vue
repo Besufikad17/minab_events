@@ -19,7 +19,6 @@
     const token = useCookie('token');
     if (token.value && token.value !== null) {
         decoded.value = jwtDecode(token.value!);
-        console.log(decoded.value);
     } else {
         await navigateTo("/auth/login");
     }
