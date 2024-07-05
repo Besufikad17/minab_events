@@ -5,12 +5,12 @@ import FilterIcon from "../../components/icons/Filter.vue";
 import CloseIcon from "../../components/icons/Close.vue";
 import DateIcon from "../../components/icons/Date.vue";
 import LoadingIcon from "../../components/icons/Loading.vue";
-import { getLocationsQuery } from "../../utils/constants/queries/locations";
 import { searchEventQuery } from "../../utils/constants/queries/events";
 import type { EventResponse, Events } from "../../types/event";
-import type { Location, LocationResponse } from "../../types/locations";
+import type { Category, CategoryResponse } from "~/types/category";
 import { Vue3Lottie } from 'vue3-lottie';
 import { emptyAnimation } from "~/utils/constants/strings";
+import { GetCategories } from "~/utils/constants/queries/category";
 
 defineComponent({
   components: {
@@ -28,6 +28,7 @@ defineComponent({
 const route = useRoute();
 const isLoading = ref(false);
 const events = ref<EventResponse[]>([]);
+const categories = ref([] as Category[]);
 const totalEvents = ref(0);
 const currentPage = ref(1);
 const skip = ref(route.query.skip ? parseInt(route.query.skip as string) : 0);
@@ -63,11 +64,16 @@ const variables = {
 isLoading.value = true;
 const { data } = await useAsyncQuery<Events>(searchEventQuery, variables);
 if(data.value?.events) {
-  console.log(data.value?.events)
   events.value = data.value.events;
   totalEvents.value = data.value.events_aggregate.aggregate.count;
 }else {
   console.log('No events found');
+}
+const { data: categoriesData } = await useAsyncQuery<CategoryResponse>(GetCategories);
+if(categoriesData.value) {
+  categories.value = categoriesData.value.categories;
+}else {
+  console.log("No categories found");
 }
 isLoading.value = false;
 
@@ -142,12 +148,7 @@ maxTrigger();
                 <select id="categories" v-model="category"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
                   <option value=""></option>
-                  <option value="Concerts">Concerts</option>
-                  <option value="Classes and Workshops">Classes and Workshops</option>
-                  <option value="Festivals and Fairs">Festivals and Fairs</option>
-                  <option value="Conferences">Conferences</option>
-                  <option value="Corporate Events">Corporate Events</option>
-                  <option value="Online Events">Online Events</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
                 </select><br />
 
                 <div class="flex flex-col">

@@ -30,6 +30,8 @@ if(token.value && token.value !== null) {
   await navigateTo("/auth/login");
 }
 
+const router = useRouter();
+
 const props = defineProps({
   id: Number,
   locationId: Number,
@@ -121,21 +123,7 @@ const onSubmit = handleSubmit(async () => {
   console.log(images.value);
   isLoading.value = true;
   if(props.type === "create") {
-    addEvent({
-      user_id: decoded.value.id,
-      title: title.value,
-      description: description.value,
-      category_id: parseInt(category.value),
-      start_date: new Date(startDate.value),
-      end_date: new Date(endDate.value),
-      tags: tagsList.value,
-      city: selectedLocation.value.city || "",
-      venue: selectedLocation.value.venue,
-      lat: selectedLocation.value.latitude,
-      lng: selectedLocation.value.longtiude,
-      images: images.value,
-      tickets: tickets.value
-    }).then(response => {
+    addEvent().then(response => {
       console.log(response);
       message.value = "Event created successfully";
       setTimeout(() => {
@@ -208,7 +196,6 @@ const onSubmit = handleSubmit(async () => {
         message.value = "";
       }, 5000);
       window.location.reload();
-      // navigateTo(`/events/${props.id}`);
     }).catch(err => {
       isError.value = true;
       message.value = "Failed to update event";

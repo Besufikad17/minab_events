@@ -3,6 +3,7 @@
   import { jwtDecode } from "jwt-decode";
   import type { Bookmarks, BookmarkedEvents } from "~/types/bookmark";
   import { GetBookmarksQuery } from "~/utils/constants/queries/bookmarks";
+import { emptyAnimation } from "~/utils/constants/strings";
 
   const route = useRoute();
   const isLoading = ref(false);
@@ -49,7 +50,7 @@
       <div v-else class="flex flex-col items-center text-center w-full">
         <client-only>
           <Vue3Lottie
-            animationLink="https://lottie.host/aa6509bb-c839-4558-8130-5d2172f45a73/IvRbW89MAD.json"
+            :animation-link="emptyAnimation"
             :height="200"
             :width="200"
             :loop="false"

@@ -2,6 +2,7 @@
   import { ref } from "vue";
   import { GetMyEventsQuery } from "../../utils/constants/queries/events";
   import { jwtDecode } from "jwt-decode";
+  import { emptyAnimation } from "~/utils/constants/strings";
   import type { EventResponse, Events } from "../../types/event";
   import AddIcon from "../../components/icons/Add.vue";
 
@@ -56,7 +57,7 @@
       <div v-else class="flex flex-col items-center text-center w-full">
         <client-only>
           <Vue3Lottie
-            animationLink="https://lottie.host/aa6509bb-c839-4558-8130-5d2172f45a73/IvRbW89MAD.json"
+            :animation-link="emptyAnimation"
             :height="200"
             :width="200"
             :loop="false"
