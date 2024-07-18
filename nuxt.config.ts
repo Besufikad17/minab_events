@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     authHeader: 'Authorization',
     clients: {
       default: {
-        httpEndpoint: 'http://localhost:8080/v1/graphql'
+        httpEndpoint: 'https://live-muskrat-69.hasura.app/v1/graphql'
       }
     },
   },

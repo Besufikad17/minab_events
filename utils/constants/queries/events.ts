@@ -290,7 +290,7 @@ export const UpdateEventMutation = gql`
     }
 `;
 
-export  const DeleteEventMutation = gql`
+export const DeleteEventMutation = gql`
     mutation DeleteEvent($id: Int!, $location_id: Int!) {
         delete_locations(
             where: {
